@@ -107,6 +107,36 @@ const Profile = () => {
                     <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider group-hover:text-white">Update Data</span>
                 </Link>
             </div>
+
+            {/* Moved Biometrics Section */}
+            <div className="mt-8 pt-6 border-t border-zinc-800 relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                    <Scale size={14} className="text-zinc-500" />
+                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Biometrics</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
+                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Age</span>
+                        <span className="text-lg font-bold text-white font-mono">{profile.age} <span className="text-xs text-zinc-600">Yrs</span></span>
+                    </div>
+                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
+                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Gender</span>
+                        <span className="text-lg font-bold text-white font-mono">{profile.gender}</span>
+                    </div>
+                    {profile.height && (
+                        <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
+                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Height</span>
+                            <span className="text-lg font-bold text-white font-mono">{profile.height} <span className="text-xs text-zinc-600">cm</span></span>
+                        </div>
+                    )}
+                    {profile.weight && (
+                        <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
+                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Weight</span>
+                            <span className="text-lg font-bold text-white font-mono">{profile.weight} <span className="text-xs text-zinc-600">kg</span></span>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
 
         {/* AI Analysis Banner */}
@@ -126,11 +156,11 @@ const Profile = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
             
-            {/* Left Column: Stats & Biometrics (4 cols) */}
+            {/* Left Column: Stats (4 cols) - Biometrics removed */}
             <div className="md:col-span-4 space-y-6">
                 
                 {/* Attribute Preferences */}
-                <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
+                <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 h-full">
                     <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">
                         <Activity size={16} className="text-padel-lime" /> Attribute Targets
                     </h3>
@@ -139,42 +169,13 @@ const Profile = () => {
                     <StatRow label="Comfort/Absorb" value={profile.comfort} color="bg-blue-500" />
                     <StatRow label="Structural Rigidity" value={profile.rigidity} color="bg-zinc-500" />
                 </div>
-
-                {/* Biometrics Card */}
-                <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
-                     <h3 className="text-sm font-black text-white uppercase italic mb-4 flex items-center gap-2">
-                        <Scale size={16} className="text-zinc-500" /> Biometrics
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                         <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
-                            <div className="text-[9px] text-zinc-600 font-mono uppercase">Age</div>
-                            <div className="text-lg font-bold text-white font-mono">{profile.age}</div>
-                         </div>
-                         <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
-                            <div className="text-[9px] text-zinc-600 font-mono uppercase">Gender</div>
-                            <div className="text-lg font-bold text-white font-mono">{profile.gender}</div>
-                         </div>
-                         {profile.height && (
-                             <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
-                                <div className="text-[9px] text-zinc-600 font-mono uppercase">Height</div>
-                                <div className="text-lg font-bold text-white font-mono">{profile.height} <span className="text-xs text-zinc-600">cm</span></div>
-                             </div>
-                         )}
-                         {profile.weight && (
-                             <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
-                                <div className="text-[9px] text-zinc-600 font-mono uppercase">Weight</div>
-                                <div className="text-lg font-bold text-white font-mono">{profile.weight} <span className="text-xs text-zinc-600">kg</span></div>
-                             </div>
-                         )}
-                    </div>
-                </div>
             </div>
 
             {/* Right Column: Game Context & Meta (8 cols) */}
             <div className="md:col-span-8 space-y-6">
                 
                 {/* Game Context Card */}
-                <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
+                <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 h-full">
                     <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">
                         <Target size={16} className="text-padel-lime" /> Game Context
                     </h3>
@@ -220,26 +221,26 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Medical Alert Card (Conditional) */}
-                {profile.injuries && profile.injuries.some(i => i !== 'None') && (
-                    <div className="bg-red-500/5 rounded-2xl p-6 border border-red-500/20">
-                         <h3 className="text-sm font-black text-red-400 uppercase italic mb-4 flex items-center gap-2">
-                            <AlertTriangle size={16} /> Medical Considerations
-                        </h3>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                            {profile.injuries.map(injury => (
-                                <span key={injury} className="px-3 py-1 bg-red-500/20 text-red-300 text-xs font-bold uppercase rounded border border-red-500/30 flex items-center gap-2">
-                                    <HeartPulse size={12} /> {injury}
-                                </span>
-                            ))}
+                    {/* Medical Alert Card (Conditional) - Moved inside Context card for cleaner layout if needed, or keep separate */}
+                    {profile.injuries && profile.injuries.some(i => i !== 'None') && (
+                        <div className="mt-6 bg-red-500/5 rounded-xl p-4 border border-red-500/20">
+                             <h3 className="text-xs font-black text-red-400 uppercase italic mb-3 flex items-center gap-2">
+                                <AlertTriangle size={14} /> Medical Considerations
+                            </h3>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {profile.injuries.map(injury => (
+                                    <span key={injury} className="px-3 py-1 bg-red-500/20 text-red-300 text-[10px] font-bold uppercase rounded border border-red-500/30 flex items-center gap-2">
+                                        <HeartPulse size={10} /> {injury}
+                                    </span>
+                                ))}
+                            </div>
+                            <p className="text-zinc-400 text-[10px] font-mono mt-2">
+                                * System has automatically filtered out high-vibration equipment and applied comfort-first penalties to potential matches.
+                            </p>
                         </div>
-                        <p className="text-zinc-400 text-xs font-mono mt-3">
-                            * System has automatically filtered out high-vibration equipment and applied comfort-first penalties to potential matches.
-                        </p>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
 

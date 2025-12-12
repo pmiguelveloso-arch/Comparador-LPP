@@ -22,7 +22,9 @@ export const metalbone_3_4_2025: Racket = {
     sweetspot: 7,
     rigidity: 8
   },
-  review_summary: "A escolha de Ale Galán para 2025. Mantém o sistema de pesos personalizável mas com um novo layout octogonal para maior solidez no smash.",
+  review_summary: "A escolha de Ale Galán para 2025. Mantém o sistema de pesos personalizável mas com um novo layout octogonal para maior solidez no smash. Para quem gosta de personalizar o balanço.",
+  targetPlayer: "Avançado",
+  gameStyle: "Ataque Técnico / Personalizável",
   technologies: [
     { "label": "Weight & Balance System", "note": "Ajuste de peso +/- 12g." },
     { "label": "Spin Blade Decal", "note": "Textura rugosa extrema." }

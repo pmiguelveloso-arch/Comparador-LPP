@@ -22,7 +22,9 @@ export const at10_18k_2025: Racket = {
     sweetspot: 9,
     rigidity: 8
   },
-  review_summary: "O Mozart de Catamarca ataca novamente. Novo molde com aerodinâmica EOS Flap melhorada e grip customizável de série.",
+  review_summary: "O Mozart de Catamarca ataca novamente. Novo molde com aerodinâmica melhorada. Uma raquete completa que oferece um compromisso perfeito entre tato rígido e controlo.",
+  targetPlayer: "Intermédio / Avançado",
+  gameStyle: "Polivalente / Versátil",
   technologies: [
     { "label": "EOS Flap", "note": "Perurações laterais para rapidez." },
     { "label": "Custom Grip", "note": "Redutor de vibração ajustável." }

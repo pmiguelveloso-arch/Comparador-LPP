@@ -39,6 +39,10 @@ export interface Racket {
   technologies: Technology[];
   prices: Price[];
   isTrending?: boolean; // Editor's Choice Flag
+  
+  // New Fields
+  targetPlayer?: string; // e.g. "Avançado / Profissional"
+  gameStyle?: string;    // e.g. "Ataque Agressivo", "Controlo Total"
 }
 
 export interface Review {
@@ -47,7 +51,8 @@ export interface Review {
   userId: string;
   userName: string;
   date: string;
-  rating: number; // 1-10
+  rating: number; // Overall Average (Calculated)
+  characteristics: RacketCharacteristics; // Detailed Scores
   comment: string;
   playtime: string; // e.g. "1 Month", "6 Months"
 }

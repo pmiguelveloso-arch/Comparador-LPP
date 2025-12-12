@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { RACKETS } from '../data/rackets';
 import { PlayerProfile, Racket } from '../types';
 import { getRacketMatch } from '../utils/matchLogic';
 import RacketCard from '../components/RacketCard';
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowRight, Activity, Zap, BarChart2 } from 'lucide-react';
+import { Trophy, ArrowRight, Activity, Zap, BarChart2, CheckCircle2, BrainCircuit, MessageSquareQuote } from 'lucide-react';
 
 const MatchResults = () => {
   const [matches, setMatches] = useState<Racket[]>([]);
@@ -27,6 +28,42 @@ const MatchResults = () => {
       setMatches(ranked);
     }
   }, []);
+
+  // --- LOGIC: GENERATE DYNAMIC ANALYSIS ---
+  const getMatchAnalysis = (racket: Racket, profile: PlayerProfile) => {
+    
+    // 1. THE "WHY" (Fit Reason)
+    let whyFit = "Esta raquete equilibra as suas métricas gerais.";
+    if (profile.injuries && profile.injuries.some(i => i !== 'None') && racket.characteristics.comfort > 7) {
+        whyFit = `A elevada taxa de conforto (${racket.characteristics.comfort}/10) e o núcleo ${racket.core_type} protegem as suas articulações contra vibrações.`;
+    } else if (profile.style === 'ofensivo' && racket.balance === 'alto') {
+        whyFit = "O balanço alto alinha-se perfeitamente com o seu estilo ofensivo, maximizando a alavanca no smash.";
+    } else if (profile.style === 'consistente' && racket.characteristics.sweetspot > 8) {
+        whyFit = "O ponto doce alargado compensa erros e garante a consistência defensiva que o seu jogo exige.";
+    } else if (profile.net_style === 'aggressive' && racket.characteristics.maneuverability > 7) {
+        whyFit = "A manuseabilidade superior permite a rapidez de reação necessária para os seus voleios de bloqueio e ataque.";
+    }
+
+    // 2. HUMAN TRANSLATION (Tech -> Benefit)
+    const translations = [];
+    if (racket.shape === 'diamante') translations.push("Formato Diamante = Mais peso na cabeça para finalizar pontos.");
+    if (racket.shape === 'redonda') translations.push("Formato Redondo = Mais fácil de manusear e defender.");
+    if (racket.surface_type.includes('18K') || racket.surface_type.includes('12K')) translations.push("Carbono denso = Toque seco e precisão cirúrgica.");
+    if (racket.surface_type.includes('Fiber') || racket.surface_type.includes('3K')) translations.push("Fibra flexível = Saída de bola fácil sem esforço.");
+    if (racket.roughness === 'Sim') translations.push("Acabamento rugoso = Mais efeito nos seus slices e viboras.");
+    const techTranslation = translations.slice(0, 2).join(" ");
+
+    // 3. MICRO INSIGHT
+    let insight = "";
+    const powerDiff = (racket.characteristics.power || 0) - profile.power;
+    
+    if (powerDiff > 2) insight = "🚀 Boost de Potência: Esta raquete dá-lhe mais saída do que o seu perfil pediu, ideal para evoluir no ataque.";
+    else if (racket.characteristics.control > 8) insight = "🎯 Sniper Mode: Uma extensão do braço para colocar a bola onde quiser.";
+    else if (racket.price_range.includes("300")) insight = "💎 Investimento Premium: Tecnologia de topo usada no World Padel Tour.";
+    else insight = "⚖️ Equilíbrio Perfeito: Uma extensão natural do seu braço.";
+
+    return { whyFit, techTranslation, insight };
+  };
 
   if (!profile) {
     return (
@@ -77,8 +114,11 @@ const MatchResults = () => {
 
         {/* Results Grid - Linear Order 1-2-3 */}
         <div className="grid md:grid-cols-3 gap-8 items-start max-w-6xl mx-auto">
-          {matches.map((racket, index) => (
-            <div key={racket.id} className="relative group">
+          {matches.map((racket, index) => {
+            const analysis = getMatchAnalysis(racket, profile);
+            
+            return (
+            <div key={racket.id} className="relative group flex flex-col h-full">
               
               {/* Rank Number & Badge */}
               <div className="flex items-center justify-between mb-4 px-2">
@@ -93,14 +133,51 @@ const MatchResults = () => {
               </div>
               
               {/* Card Container */}
-              <div className={`transform transition-all duration-300 ${index === 0 ? 'scale-105 ring-2 ring-padel-lime ring-offset-4 ring-offset-padel-black shadow-2xl shadow-padel-lime/10' : 'hover:scale-102'}`}>
+              <div className={`transform transition-all duration-300 ${index === 0 ? 'scale-105 ring-2 ring-padel-lime ring-offset-4 ring-offset-padel-black shadow-2xl shadow-padel-lime/10 mb-8' : 'hover:scale-102 mb-4'}`}>
                   <div className={`rounded-xl h-[420px] ${index === 0 ? 'bg-zinc-900' : 'bg-zinc-900/50'}`}>
                     <RacketCard racket={racket} showMatchScore={true} />
                   </div>
               </div>
 
+              {/* DYNAMIC ANALYSIS PANEL */}
+              <div className={`flex-grow mt-4 p-5 rounded-xl border flex flex-col gap-4 ${index === 0 ? 'bg-zinc-900/80 border-padel-lime/30' : 'bg-zinc-900/40 border-zinc-800'}`}>
+                  
+                  {/* 1. WHY */}
+                  <div>
+                      <div className="flex items-center gap-2 mb-2 text-padel-lime">
+                          <CheckCircle2 size={16} />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Porquê esta escolha?</span>
+                      </div>
+                      <p className="text-sm text-zinc-300 leading-relaxed font-medium">
+                          {analysis.whyFit}
+                      </p>
+                  </div>
+
+                  {/* 2. TRANSLATION */}
+                  <div>
+                      <div className="flex items-center gap-2 mb-2 text-blue-400">
+                          <BrainCircuit size={16} />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Tradução Técnica</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 font-mono leading-relaxed">
+                          {analysis.techTranslation}
+                      </p>
+                  </div>
+
+                  {/* 3. INSIGHT */}
+                  <div className="mt-auto pt-4 border-t border-white/5">
+                      <div className="flex items-start gap-2 text-zinc-300">
+                          <MessageSquareQuote size={16} className="text-zinc-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-xs italic font-bold text-white">
+                              "{analysis.insight}"
+                          </p>
+                      </div>
+                  </div>
+
+              </div>
+
             </div>
-          ))}
+          )})}
         </div>
         
         {/* Footer Action */}

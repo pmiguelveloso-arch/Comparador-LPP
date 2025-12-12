@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { PlayerProfile } from "../types";
+import { PlayerProfile, Racket } from "../types";
 
 // Initialize Gemini Client
 // IMPORTANT: In a real production app, the API key should be handled securely (e.g., via backend proxy).
@@ -157,4 +157,59 @@ export async function identifyRacketFromImage(file: File): Promise<any> {
     console.error("AI Vision Failed:", error);
     throw error;
   }
+}
+
+export async function chatWithPadelCoach(
+    history: {role: 'user' | 'model', text: string}[],
+    profile: PlayerProfile | null, 
+    comparedRackets: Racket[]
+): Promise<string> {
+    const modelId = "gemini-2.5-flash";
+
+    const profileContext = profile 
+        ? `PLAYER PROFILE: Level: ${profile.experience}, Style: ${profile.style}, Position: ${profile.position}, Weight: ${profile.weight}kg, Height: ${profile.height}cm, Injuries: ${profile.injuries?.join(',')}, Touch Pref: ${profile.touch_preference}. Targets: Power ${profile.power}/10, Control ${profile.control}/10.`
+        : "PLAYER PROFILE: Unknown/Guest (Ask them about their level and style if relevant).";
+
+    const racketContext = comparedRackets.length > 0
+        ? `RACKETS BEING COMPARED: ${comparedRackets.map(r => `${r.brand} ${r.model} (${r.year}) - Shape: ${r.shape}, Balance: ${r.balance}, Hardness: ${r.characteristics.rigidity}/10`).join(' VS ')}`
+        : "RACKETS BEING COMPARED: None selected yet.";
+
+    const systemPrompt = `
+        You are "Coach AI", a world-class Padel Expert and Technical Consultant for "Loucos por Padel".
+        
+        YOUR GOAL: Help the user choose the perfect racket based on their profile and the rackets they are comparing.
+        
+        CONTEXT:
+        ${profileContext}
+        ${racketContext}
+
+        GUIDELINES:
+        1. Be concise, professional, but enthusiastic.
+        2. If the user is comparing rackets, analyze which one fits their PROFILE better. Explain WHY based on physics (balance, weight, hardness).
+        3. If there is a mismatch (e.g., beginner looking at a pro diamond racket), gently warn them and suggest why it might be difficult.
+        4. If you lack info (e.g., injuries or level), ask the user specifically about it to refine your advice.
+        5. Use formatting like bullet points for clarity.
+        
+        Answer the user's latest message based on this context.
+    `;
+
+    // Convert history to Gemini format
+    const contents = [
+        { role: 'user', parts: [{ text: systemPrompt }] }, // System instruction as first user message for context
+        ...history.map(msg => ({
+            role: msg.role,
+            parts: [{ text: msg.text }]
+        }))
+    ];
+
+    try {
+        const response = await ai.models.generateContent({
+            model: modelId,
+            contents: contents
+        });
+        return response.text || "I'm analyzing the court data... try asking again.";
+    } catch (error) {
+        console.error("Chat Error", error);
+        return "Tactical timeout. My connection to the server is weak. Please try again.";
+    }
 }

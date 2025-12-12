@@ -8,36 +8,47 @@ import { ArrowLeft, Target, Award, Zap, BarChart2 } from 'lucide-react';
 import { getRacketMatch } from '../utils/matchLogic';
 
 // Mock Data for Brand Metadata
+// EDITAR AQUI: Altere os links em 'cover' para mudar a imagem de fundo
 const BRAND_META: Record<string, { desc: string; cover: string; slogan: string }> = {
   Bullpadel: {
     slogan: "The Padel Specialist",
     desc: "Leading the industry with innovation and design. Bullpadel is the choice of champions like Paquito Navarro and Juan Tello, offering maximum power and precision engineering.",
-    cover: "https://images.unsplash.com/photo-1626244422184-e8674d852a41?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1626244422184-e8674d852a41?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   },
   Nox: {
     slogan: "Makes You Improve",
     desc: "Engineered for performance. Home of Agustín Tapia, Nox rackets are renowned for their incredible sweet spot and anti-vibration technology tailored for every level.",
-    cover: "https://images.unsplash.com/photo-1599474924187-334a405be634?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1599474924187-334a405be634?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   },
   Adidas: {
     slogan: "All For Padel",
     desc: "German engineering meets padel court dominance. Featuring the Metalbone and Adipower series, Adidas delivers customizable weight systems and explosive power.",
-    cover: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   },
   Head: {
     slogan: "Performance for Every Player",
     desc: "Advanced Auxetic technology for sensational feel. Head dominates the tour with Arturo Coello and Ari Sánchez, focusing on speed and control.",
-    cover: "https://images.unsplash.com/photo-1628779238951-be2c9f2a07f4?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1628779238951-be2c9f2a07f4?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   },
   Kuikma: {
     slogan: "Precision & Value",
     desc: "Developed by Decathlon's dedicated padel center in Madrid. High-performance materials at an unbeatable price point, tested by Horacio Álvarez Clementi.",
-    cover: "https://images.unsplash.com/photo-1610342517865-c323f46f3325?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1610342517865-c323f46f3325?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   },
   StarVie: {
     slogan: "Made in Spain",
     desc: "Handcrafted excellence. One of the few brands manufacturing directly in Spain, ensuring premium quality control and unique material compositions.",
-    cover: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=2000&auto=format&fit=crop"
+    cover: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
+  },
+  Babolat: {
+    slogan: "Play Your Own Game",
+    desc: "Explosive power and precision. The weapon of choice for Juan Lebrón, featuring specialized carbon structures for technical attackers.",
+    cover: "https://images.unsplash.com/photo-1530915516966-23b599de47b3?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
+  },
+  Siux: {
+    slogan: "Feel The Padel",
+    desc: "Avant-garde technology and varied molds. Siux offers a vast catalog favored by pros like Sanyo Gutiérrez and Stupa for its versatility.",
+    cover: "https://images.unsplash.com/photo-1628779238951-be2c9f2a07f4?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
   }
 };
 
@@ -52,7 +63,7 @@ const BrandLanding = () => {
   const [selectedRacket, setSelectedRacket] = useState<Racket | null>(null);
   
   // Normalize brand name for case-insensitive matching
-  const normalizedBrand = brandName ? brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase() : '';
+  const normalizedBrand = brandName ? Object.keys(BRAND_META).find(key => key.toLowerCase() === brandName.toLowerCase()) || brandName : '';
   const meta = BRAND_META[normalizedBrand] || DEFAULT_META;
 
   // Memoize filtered and sorted rackets

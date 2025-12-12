@@ -27,8 +27,6 @@ export const metalbone_3_3_2024: Racket = {
     { "label": "Weight & Balance System", "note": "Pesos removíveis." },
     { "label": "Octagonal Structure", "note": "Maior rigidez estrutural." }
   ],
-  prices: [
-    { "store": "PadelPro", "price": 285, "url": "#" }
-  ],
+  prices: [],
   isTrending: true
 };

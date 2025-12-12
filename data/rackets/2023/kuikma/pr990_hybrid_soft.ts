@@ -27,6 +27,6 @@ export const pr990_hybrid_soft_2023: Racket = {
     { "label": "Twin Tube Carbon", "note": "Resistência." }
   ],
   prices: [
-    { "store": "Decathlon", "price": 100, "url": "#" }
+    { "store": "Decathlon", "price": 100, "url": "https://www.decathlon.pt" }
   ]
 };

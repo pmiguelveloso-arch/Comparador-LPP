@@ -28,7 +28,7 @@ export const at10_18k_2024: Racket = {
     { "label": "Pulse System", "note": "Redução de vibrações." }
   ],
   prices: [
-    { "store": "TudoPadel", "price": 299, "url": "#" }
+    { "store": "TotalPadel", "price": 299, "url": "https://www.totalpadel.com" }
   ],
   isTrending: true
 };

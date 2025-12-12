@@ -23,12 +23,15 @@ export const vertex04_2024: Racket = {
     rigidity: 9
   },
   review_summary: "A raquete definitiva para jogadores de potência. A nova Vertex 04 oferece uma saída de bola explosiva.",
+  targetPlayer: "Avançado",
+  gameStyle: "Potência",
   technologies: [
     { "label": "Air React Channel", "note": "Melhora a aerodinâmica." },
     { "label": "VibraDrive", "note": "Redução de vibrações no punho." }
   ],
   prices: [
-    { "store": "PadelNuestro", "price": 279, "url": "#" }
+    { "store": "PadelNuestro", "price": 279, "url": "https://www.padelnuestro.com" },
+    { "store": "TennisPoint", "price": 285, "url": "https://www.tennis-point.com" }
   ],
   isTrending: true
 };

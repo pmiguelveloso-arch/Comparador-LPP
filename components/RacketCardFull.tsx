@@ -165,7 +165,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                                <div className="flex justify-between text-[9px] font-bold text-zinc-400 uppercase mb-1">
                                   <span>{c}</span>
                                   <span className="text-white font-mono">{val}/10</span>
-                               </div>
+                                </div>
                                <div className="h-1 bg-zinc-800 rounded-full">
                                   <div className="h-full bg-white" style={{ width: `${val * 10}%` }}></div>
                                </div>
@@ -202,7 +202,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                     </button>
                     
                     <a 
-                       href={racket.prices[0]?.url || '#'} 
+                       href={racket.prices?.[0]?.url || '#'} 
                        target="_blank"
                        rel="noreferrer"
                        className="flex-1 md:flex-none bg-white text-padel-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
@@ -210,6 +210,30 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                         Buy Now <ExternalLink size={14} />
                     </a>
                  </div>
+             </div>
+
+             {/* Store Listing in Modal (Optional enhancement to match RacketDetail) */}
+             <div className="mt-4 pt-4 border-t border-zinc-800">
+                <h6 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Available At</h6>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {racket.prices.map((price, idx) => (
+                    <a 
+                      key={idx} 
+                      href={price.url} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center justify-between p-2 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-padel-lime hover:bg-zinc-800 transition-all group"
+                    >
+                       <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded bg-white flex items-center justify-center text-black font-bold text-[10px] uppercase">
+                             {price.store ? price.store.substring(0,2) : '??'}
+                          </div>
+                          <div className="font-bold text-zinc-300 text-xs uppercase">{price.store || 'Unknown'}</div>
+                       </div>
+                       <span className="text-sm font-bold text-padel-lime font-mono">{price.price}€</span>
+                    </a>
+                  ))}
+                </div>
              </div>
 
           </div>
