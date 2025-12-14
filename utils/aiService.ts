@@ -2,9 +2,23 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PlayerProfile, Racket } from "../types";
 
-// Initialize Gemini Client
-// IMPORTANT: In a real production app, the API key should be handled securely (e.g., via backend proxy).
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialization holder
+let aiClient: GoogleGenAI | null = null;
+
+// Helper to safely get the client instance
+const getAiClient = (): GoogleGenAI => {
+  if (aiClient) return aiClient;
+
+  // content of process.env.API_KEY is injected at build time
+  const apiKey = process.env.API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("MISSING_API_KEY");
+  }
+
+  aiClient = new GoogleGenAI({ apiKey });
+  return aiClient;
+};
 
 export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Promise<PlayerProfile> {
   const modelId = "gemini-2.5-flash";
@@ -46,6 +60,7 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
   `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
@@ -83,8 +98,8 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
 
     return completeProfile;
 
-  } catch (error) {
-    console.error("AI Analysis Failed, falling back to local logic:", error);
+  } catch (error: any) {
+    console.warn("AI Analysis unavailable or failed. Using fallback logic.", error.message);
     
     // Fallback logic if AI fails (e.g. no key, network error)
     let basePower = 5;
@@ -141,6 +156,7 @@ export async function identifyRacketFromImage(file: File): Promise<any> {
   `;
 
   try {
+    const ai = getAiClient();
     const imagePart = await fileToGenerativePart(file);
     
     const response = await ai.models.generateContent({
@@ -205,6 +221,7 @@ export async function chatWithPadelCoach(
     ];
 
     try {
+        const ai = getAiClient();
         const response = await ai.models.generateContent({
             model: modelId,
             contents: contents
@@ -212,6 +229,6 @@ export async function chatWithPadelCoach(
         return response.text || "Estou a analisar os dados do campo... tenta perguntar novamente.";
     } catch (error) {
         console.error("Chat Error", error);
-        return "Tempo técnico. A minha ligação ao servidor está fraca. Por favor tenta novamente.";
+        return "Modo Offline: Não foi possível conectar ao treinador IA (Verifique a API Key).";
     }
 }
