@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RACKETS } from '../data/rackets';
 import RacketCard from '../components/RacketCard';
@@ -13,20 +13,41 @@ const BrandLanding = () => {
   const { brandName } = useParams();
   const [selectedRacket, setSelectedRacket] = useState<Racket | null>(null);
   
+  // State for the list that will be displayed
+  const [displayRackets, setDisplayRackets] = useState<Racket[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+  
   // Normalize brand name for case-insensitive matching
   const normalizedBrand = brandName ? Object.keys(BRAND_META).find(key => key.toLowerCase() === brandName.toLowerCase()) || brandName : '';
   const meta = BRAND_META[normalizedBrand] || DEFAULT_META;
 
-  // Memoize filtered and sorted rackets
-  const brandRackets = useMemo(() => {
-    const filtered = RACKETS.filter(r => r.brand.toLowerCase() === brandName?.toLowerCase());
-    // Sort by Match Score if profile exists
-    return filtered.sort((a, b) => getRacketMatch(b) - getRacketMatch(a));
+  // 1. Get Base Rackets (Stable for Server & Client)
+  // This ensures the initial render is identical on both sides
+  const baseRackets = useMemo(() => {
+    return RACKETS.filter(r => r.brand.toLowerCase() === brandName?.toLowerCase());
   }, [brandName]);
 
-  // Calculate stats
-  const avgPower = Math.round(brandRackets.reduce((acc, r) => acc + r.characteristics.power, 0) / brandRackets.length) || 0;
-  const avgControl = Math.round(brandRackets.reduce((acc, r) => acc + r.characteristics.control, 0) / brandRackets.length) || 0;
+  // 2. Handle Sorting on Client Only (After Hydration)
+  useEffect(() => {
+    setIsMounted(true);
+    
+    // Create a copy to sort
+    const sorted = [...baseRackets].sort((a, b) => {
+      // getRacketMatch safely handles window check internally, 
+      // but strictly running this in useEffect ensures we access localStorage 
+      // only when available and consistent.
+      return getRacketMatch(b) - getRacketMatch(a);
+    });
+    
+    setDisplayRackets(sorted);
+  }, [baseRackets]);
+
+  // Use baseRackets for initial render (SSR), displayRackets for interactive render (Client)
+  const activeList = isMounted ? displayRackets : baseRackets;
+
+  // Calculate stats based on the active list
+  const avgPower = Math.round(activeList.reduce((acc, r) => acc + r.characteristics.power, 0) / (activeList.length || 1)) || 0;
+  const avgControl = Math.round(activeList.reduce((acc, r) => acc + r.characteristics.control, 0) / (activeList.length || 1)) || 0;
 
   if (!brandName) return null;
 
@@ -67,7 +88,7 @@ const BrandLanding = () => {
             <div className="flex items-center gap-3">
                <div className="p-2 bg-zinc-800 rounded text-padel-lime"><BarChart2 size={20} /></div>
                <div>
-                 <div className="text-xl font-bold text-white font-mono">{brandRackets.length}</div>
+                 <div className="text-xl font-bold text-white font-mono">{activeList.length}</div>
                  <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Modelos Indexados</div>
                </div>
             </div>
@@ -104,13 +125,13 @@ const BrandLanding = () => {
                 Modelos Disponíveis
             </h2>
             <div className="text-[10px] font-mono text-zinc-500 uppercase">
-                Ordenado por Relevância
+                {isMounted ? 'Ordenado por Relevância' : 'A Carregar Recomendações...'}
             </div>
          </div>
 
-         {brandRackets.length > 0 ? (
+         {activeList.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {brandRackets.map(racket => (
+              {activeList.map(racket => (
                 <div key={racket.id} className="h-[420px]">
                   <RacketCard 
                     racket={racket} 
