@@ -2,6 +2,9 @@
 import { PlayerProfile, Racket } from '../types';
 
 export function getRacketMatch(racket: Racket): number {
+  // SSR Guard: Return 0 if running on server/build time
+  if (typeof window === 'undefined') return 0;
+
   const profileString = localStorage.getItem("player_profile");
   
   if (!profileString) return 0;

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Target, BarChart2, Plus, ArrowUpRight, Award } from 'lucide-react';
 import { RACKETS } from '../data/rackets';
@@ -12,7 +12,13 @@ const Home = () => {
   // Fallback to first 3 if no trending rackets defined
   const featuredRackets = trendingRackets.length > 0 ? trendingRackets : RACKETS.slice(0, 3);
   
-  const profileExists = localStorage.getItem('player_profile');
+  const [profileExists, setProfileExists] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setProfileExists(!!localStorage.getItem('player_profile'));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen pt-20 bg-padel-black bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">

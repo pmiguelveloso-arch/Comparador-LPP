@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlayerProfile } from '../types';
 import { Link } from 'react-router-dom';
 import { User, Activity, Edit2, Zap, Shield, Target, Wallet, HeartPulse, Scale, Gauge, Wind, AlertTriangle, Cpu, ArrowRight, MessageSquare, ExternalLink, Save } from 'lucide-react';
@@ -10,11 +10,24 @@ import { RACKETS } from '../data/rackets';
 const Profile = () => {
   const { getUserReviews } = useApp();
   const { isAuthenticated, user } = useAuth();
+  const [profile, setProfile] = useState<PlayerProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  const savedProfile = localStorage.getItem('player_profile');
-  const profile: PlayerProfile | null = savedProfile ? JSON.parse(savedProfile) : null;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const savedProfile = localStorage.getItem('player_profile');
+        if (savedProfile) {
+            setProfile(JSON.parse(savedProfile));
+        }
+        setLoading(false);
+    }
+  }, []);
   
   const userReviews = getUserReviews();
+
+  if (loading) {
+     return <div className="min-h-screen bg-padel-black"></div>;
+  }
 
   if (!profile) {
     return (

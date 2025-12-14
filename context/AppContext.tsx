@@ -16,23 +16,39 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children?: ReactNode }) => {
-  const [compareList, setCompareList] = useState<Racket[]>(() => {
-    const saved = localStorage.getItem('compareList');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [compareList, setCompareList] = useState<Racket[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const [reviews, setReviews] = useState<Review[]>(() => {
-    const saved = localStorage.getItem('reviews_db');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // 1. Hydration Effect (Runs only on client, once)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedCompare = localStorage.getItem('compareList');
+        const savedReviews = localStorage.getItem('reviews_db');
+        
+        if (savedCompare) setCompareList(JSON.parse(savedCompare));
+        if (savedReviews) setReviews(JSON.parse(savedReviews));
+      } catch (e) {
+        console.error("Failed to hydrate app state", e);
+      } finally {
+        setIsInitialized(true);
+      }
+    }
+  }, []);
+
+  // 2. Persistence Effects (Run only after initialization)
+  useEffect(() => {
+    if (isInitialized && typeof window !== 'undefined') {
+      localStorage.setItem('compareList', JSON.stringify(compareList));
+    }
+  }, [compareList, isInitialized]);
 
   useEffect(() => {
-    localStorage.setItem('compareList', JSON.stringify(compareList));
-  }, [compareList]);
-
-  useEffect(() => {
-    localStorage.setItem('reviews_db', JSON.stringify(reviews));
-  }, [reviews]);
+    if (isInitialized && typeof window !== 'undefined') {
+      localStorage.setItem('reviews_db', JSON.stringify(reviews));
+    }
+  }, [reviews, isInitialized]);
 
   const addToCompare = (racket: Racket) => {
     if (compareList.length < 3 && !compareList.find(r => r.id === racket.id)) {
@@ -55,6 +71,9 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
   };
 
   const getUserReviews = () => {
+    // Guard against server execution
+    if (typeof window === 'undefined') return [];
+
     const sessionUserStr = localStorage.getItem('loucos_session_user');
     if (sessionUserStr) {
       try {

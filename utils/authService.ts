@@ -6,13 +6,16 @@ const SESSION_KEY = 'loucos_session_user';
 
 // Helper to get simulated DB
 const getDB = (): User[] => {
+  if (typeof window === 'undefined') return [];
   const db = localStorage.getItem(DB_KEY);
   return db ? JSON.parse(db) : [];
 };
 
 // Helper to save simulated DB
 const saveDB = (users: User[]) => {
-  localStorage.setItem(DB_KEY, JSON.stringify(users));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(DB_KEY, JSON.stringify(users));
+  }
 };
 
 export const authService = {
@@ -27,10 +30,12 @@ export const authService = {
         }
 
         // Check if there is an existing guest profile to attach
-        const currentGuestProfile = localStorage.getItem('player_profile');
         let savedProfile = undefined;
-        if (currentGuestProfile) {
-            savedProfile = JSON.parse(currentGuestProfile);
+        if (typeof window !== 'undefined') {
+            const currentGuestProfile = localStorage.getItem('player_profile');
+            if (currentGuestProfile) {
+                savedProfile = JSON.parse(currentGuestProfile);
+            }
         }
 
         const newUser: User = {
@@ -46,7 +51,9 @@ export const authService = {
         saveDB(users);
         
         // Auto Login
-        localStorage.setItem(SESSION_KEY, JSON.stringify(newUser));
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(newUser));
+        }
         resolve(newUser);
       }, 800); // Simulate network delay
     });
@@ -64,12 +71,13 @@ export const authService = {
           return;
         }
 
-        // Restore user profile to active session
-        if (user.savedProfile) {
-            localStorage.setItem('player_profile', JSON.stringify(user.savedProfile));
+        if (typeof window !== 'undefined') {
+            // Restore user profile to active session
+            if (user.savedProfile) {
+                localStorage.setItem('player_profile', JSON.stringify(user.savedProfile));
+            }
+            localStorage.setItem(SESSION_KEY, JSON.stringify(user));
         }
-
-        localStorage.setItem(SESSION_KEY, JSON.stringify(user));
         resolve(user);
       }, 800);
     });
@@ -79,11 +87,14 @@ export const authService = {
   loginWithProvider: async (provider: 'google' | 'facebook'): Promise<User> => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            // Check if there is an existing guest profile to attach
-            const currentGuestProfile = localStorage.getItem('player_profile');
             let savedProfile = undefined;
-            if (currentGuestProfile) {
-                savedProfile = JSON.parse(currentGuestProfile);
+            
+            if (typeof window !== 'undefined') {
+                // Check if there is an existing guest profile to attach
+                const currentGuestProfile = localStorage.getItem('player_profile');
+                if (currentGuestProfile) {
+                    savedProfile = JSON.parse(currentGuestProfile);
+                }
             }
 
             // Simulate a user coming from a provider
@@ -97,7 +108,9 @@ export const authService = {
 
             // In a real app we would check if user exists in DB or create new.
             // For this mock, we just set the session.
-            localStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
+            }
             resolve(mockUser);
         }, 1000);
     });
@@ -105,12 +118,15 @@ export const authService = {
 
   // Logout
   logout: () => {
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem('player_profile'); // Clear session data
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem('player_profile'); // Clear session data
+    }
   },
 
   // Get current session
   getCurrentUser: (): User | null => {
+    if (typeof window === 'undefined') return null;
     const session = localStorage.getItem(SESSION_KEY);
     return session ? JSON.parse(session) : null;
   },
@@ -132,7 +148,9 @@ export const authService = {
       const currentUser = authService.getCurrentUser();
       if (currentUser && currentUser.id === userId) {
           currentUser.savedProfile = profile;
-          localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+          if (typeof window !== 'undefined') {
+              localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+          }
       }
   }
 };
