@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RACKETS } from '../data/rackets';
-import { ArrowLeft, Check, ShoppingCart, ExternalLink, Zap, Activity, Info, Scale, Box, Layers, Ruler, Users, Target, FileText, MessageSquare, Star, Send, User as UserIcon, Clock } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingCart, ExternalLink, Zap, Activity, Info, Scale, Box, Layers, Ruler, Users, Target, FileText, MessageSquare, Star, Send } from 'lucide-react';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { getRacketMatch } from '../utils/matchLogic';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { Review, RacketCharacteristics } from '../types';
+import ReviewList from '../components/ReviewList';
 
 const RacketDetail = () => {
   const { id } = useParams();
@@ -31,7 +32,7 @@ const RacketDetail = () => {
 
   // Recalculate overall rating whenever specs change
   useEffect(() => {
-    const values = Object.values(specs);
+    const values = Object.values(specs) as number[];
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     setOverallRating(parseFloat(avg.toFixed(1)));
   }, [specs]);
@@ -39,8 +40,8 @@ const RacketDetail = () => {
   if (!racket) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-padel-black text-white">
-        <h2 className="text-2xl font-black uppercase italic mb-4">404 - Gear Not Found</h2>
-        <Link to="/explore" className="text-padel-lime hover:underline font-mono text-xs uppercase">Return to Database</Link>
+        <h2 className="text-2xl font-black uppercase italic mb-4">404 - Equipamento Não Encontrado</h2>
+        <Link to="/explore" className="text-padel-lime hover:underline font-mono text-xs uppercase">Voltar à Base de Dados</Link>
       </div>
     );
   }
@@ -116,7 +117,7 @@ const RacketDetail = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
          <div className="flex justify-between items-center">
            <Link to="/explore" className="text-zinc-500 hover:text-white flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors">
-             <ArrowLeft size={14} /> Back to Gear Lab
+             <ArrowLeft size={14} /> Voltar às Raquetes
            </Link>
            
            <button 
@@ -128,7 +129,7 @@ const RacketDetail = () => {
                  : 'border-zinc-700 text-zinc-300 hover:border-white hover:text-white'
              }`}
            >
-             {isCompared ? 'Added to Compare' : '+ Add to Compare'}
+             {isCompared ? 'Adicionado' : '+ Comparar'}
            </button>
          </div>
       </div>
@@ -152,7 +153,7 @@ const RacketDetail = () => {
                  <div className="absolute top-6 left-6 z-20 animate-fade-in-up">
                     <div className="bg-padel-black/90 backdrop-blur border border-padel-lime text-padel-lime px-4 py-2 rounded text-sm font-bold shadow-[0_0_20px_rgba(163,230,53,0.3)] flex items-center gap-2 font-mono">
                       <Zap size={14} fill="currentColor" />
-                      MATCH INDEX: {matchScore}%
+                      ÍNDICE MATCH: {matchScore}%
                     </div>
                  </div>
                )}
@@ -168,10 +169,10 @@ const RacketDetail = () => {
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 relative overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-bold text-white uppercase italic flex items-center gap-2">
-                     <Activity size={16} className="text-padel-lime" /> Performance Radar
+                     <Activity size={16} className="text-padel-lime" /> Radar de Performance
                   </h3>
                   <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950 px-2 py-1 rounded border border-zinc-800">
-                    V2.0 ANALYTICS
+                    ANÁLISE V2.0
                   </span>
                 </div>
                 <div className="h-[250px] w-full -ml-4">
@@ -204,7 +205,7 @@ const RacketDetail = () => {
                       {racket.brand}
                     </Link>
                     <span className="text-zinc-500 text-xs font-mono font-bold border border-zinc-800 px-2 py-1 rounded">
-                      MODEL YEAR {racket.year}
+                      ANO {racket.year}
                     </span>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter mb-6 leading-[0.9]">
@@ -258,13 +259,13 @@ const RacketDetail = () => {
              {/* Tech Specs Grid */}
              <div>
                <h3 className="text-lg font-black text-white uppercase italic mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-4 bg-padel-lime skew-x-[-12deg]"></span> Technical Specs
+                  <span className="w-1.5 h-4 bg-padel-lime skew-x-[-12deg]"></span> Especificações Técnicas
                </h3>
                <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
-                  <SpecItem icon={Box} label="Shape Geometry" value={racket.shape} />
-                  <SpecItem icon={Scale} label="Balance Point" value={racket.balance} />
-                  <SpecItem icon={Ruler} label="Weight Range" value={`${racket.weight_min} - ${racket.weight_max}g`} />
-                  <SpecItem icon={Layers} label="Core Material" value={racket.core_type} />
+                  <SpecItem icon={Box} label="Formato" value={racket.shape} />
+                  <SpecItem icon={Scale} label="Balanço" value={racket.balance} />
+                  <SpecItem icon={Ruler} label="Peso" value={`${racket.weight_min} - ${racket.weight_max}g`} />
+                  <SpecItem icon={Layers} label="Núcleo" value={racket.core_type} />
                </div>
              </div>
 
@@ -272,7 +273,7 @@ const RacketDetail = () => {
                 {/* Technologies */}
                 <div>
                    <h3 className="text-lg font-black text-white uppercase italic mb-4 flex items-center gap-2">
-                      <span className="w-1.5 h-4 bg-violet-500 skew-x-[-12deg]"></span> Technologies
+                      <span className="w-1.5 h-4 bg-violet-500 skew-x-[-12deg]"></span> Tecnologias
                    </h3>
                    <div className="space-y-3">
                      {racket.technologies.map((tech, idx) => (
@@ -292,13 +293,13 @@ const RacketDetail = () => {
                 {/* Characteristics Bars */}
                 <div>
                    <h3 className="text-lg font-black text-white uppercase italic mb-4 flex items-center gap-2">
-                      <span className="w-1.5 h-4 bg-blue-500 skew-x-[-12deg]"></span> Characteristics
+                      <span className="w-1.5 h-4 bg-blue-500 skew-x-[-12deg]"></span> Características
                    </h3>
                    <div className="space-y-4">
                       {[
-                        { l: 'Power Output', v: racket.characteristics.power },
-                        { l: 'Control', v: racket.characteristics.control },
-                        { l: 'Comfort', v: racket.characteristics.comfort },
+                        { l: 'Potência', v: racket.characteristics.power },
+                        { l: 'Controlo', v: racket.characteristics.control },
+                        { l: 'Conforto', v: racket.characteristics.comfort },
                       ].map((stat, i) => (
                         <div key={i}>
                            <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1 text-zinc-500">
@@ -317,7 +318,7 @@ const RacketDetail = () => {
              {/* Market Data (Prices) */}
              <div className="pt-6 border-t border-zinc-800">
                 <h3 className="text-lg font-black text-white uppercase italic mb-4 flex items-center gap-2">
-                  <ShoppingCart size={20} className="text-zinc-600" /> Market Data
+                  <ShoppingCart size={20} className="text-zinc-600" /> Preços de Mercado
                 </h3>
                 
                 <div className="space-y-2">
@@ -335,7 +336,7 @@ const RacketDetail = () => {
                           </div>
                           <div>
                              <div className="font-bold text-zinc-200 text-sm uppercase tracking-wide">{price.store || 'Unknown'}</div>
-                             <div className="text-[10px] text-zinc-500 font-mono">IN STOCK</div>
+                             <div className="text-[10px] text-zinc-500 font-mono">EM STOCK</div>
                           </div>
                        </div>
                        <div className="flex items-center gap-4">
@@ -345,7 +346,7 @@ const RacketDetail = () => {
                     </a>
                   )) : (
                     <div className="p-4 bg-zinc-900 rounded-xl text-zinc-500 text-xs font-mono border border-dashed border-zinc-800 flex items-center gap-2">
-                      <Info size={14} /> NO LIVE PRICE DATA. ESTIMATED RANGE: <span className="text-white">{racket.price_range}</span>
+                      <Info size={14} /> SEM PREÇO EM TEMPO REAL. INTERVALO ESTIMADO: <span className="text-white">{racket.price_range}</span>
                     </div>
                   )}
                 </div>
@@ -360,16 +361,16 @@ const RacketDetail = () => {
                 <div>
                    <h3 className="text-2xl font-black text-white uppercase italic flex items-center gap-3">
                       <span className="w-2 h-6 bg-padel-lime skew-x-[-12deg] block"></span>
-                      Community Reviews
+                      Análises da Comunidade
                    </h3>
                    <p className="text-zinc-500 text-xs font-mono mt-1 uppercase tracking-wide">
-                      {racketReviews.length} Verified Player Reports
+                      {racketReviews.length} Relatórios de Jogadores Verificados
                    </p>
                 </div>
                 {avgRating && (
                     <div className="flex items-center gap-4 p-4 bg-zinc-900 rounded-xl border border-zinc-800">
                         <div className="text-right">
-                           <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Avg. Score</div>
+                           <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Média</div>
                            <div className="text-2xl font-black text-white">{avgRating}<span className="text-zinc-600 text-sm">/10</span></div>
                         </div>
                         <div className="h-10 w-px bg-zinc-800"></div>
@@ -387,14 +388,14 @@ const RacketDetail = () => {
                 <div className="lg:col-span-4">
                    <div className="bg-zinc-900 rounded-xl p-6 border border-zinc-800 sticky top-24">
                        <h4 className="font-bold text-white uppercase italic mb-4 flex items-center gap-2">
-                          <MessageSquare size={16} className="text-padel-lime" /> Submit Analysis
+                          <MessageSquare size={16} className="text-padel-lime" /> Submeter Análise
                        </h4>
                        
                        {!isAuthenticated ? (
                            <div className="text-center py-6">
-                               <p className="text-zinc-500 text-xs mb-4">Log in to share your technical analysis.</p>
+                               <p className="text-zinc-500 text-xs mb-4">Inicia sessão para partilhar a tua análise técnica.</p>
                                <Link to="/login" className="block w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold uppercase text-xs rounded transition-colors">
-                                   Login to Review
+                                   Entrar para Avaliar
                                </Link>
                            </div>
                        ) : (
@@ -402,7 +403,7 @@ const RacketDetail = () => {
                                
                                <div className="space-y-3">
                                    <div className="flex justify-between items-center mb-1">
-                                       <span className="text-[10px] font-bold text-white uppercase tracking-wider">Overall Rating</span>
+                                       <span className="text-[10px] font-bold text-white uppercase tracking-wider">Avaliação Geral</span>
                                        <span className="text-lg font-black text-padel-lime">{overallRating}/10</span>
                                    </div>
                                    
@@ -410,7 +411,7 @@ const RacketDetail = () => {
                                    {(['power', 'control', 'comfort', 'maneuverability', 'sweetspot', 'rigidity'] as Array<keyof RacketCharacteristics>).map((stat) => (
                                      <div key={stat}>
                                         <div className="flex justify-between mb-1">
-                                            <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">{stat === 'rigidity' ? 'Hardness' : stat}</label>
+                                            <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">{stat === 'rigidity' ? 'Dureza' : stat}</label>
                                             <span className="text-[9px] font-mono text-white">{specs[stat]}</span>
                                         </div>
                                         <input 
@@ -427,27 +428,27 @@ const RacketDetail = () => {
                                </div>
 
                                <div>
-                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Playtime Duration</label>
+                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Tempo de Utilização</label>
                                    <select 
                                      value={playtime}
                                      onChange={(e) => setPlaytime(e.target.value)}
                                      className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs p-3 rounded focus:border-padel-lime outline-none font-mono"
                                    >
-                                       <option>Demo / Test</option>
-                                       <option>1 Month</option>
-                                       <option>3 Months</option>
-                                       <option>6 Months+</option>
-                                       <option>1 Year+</option>
+                                       <option>Demo / Teste</option>
+                                       <option>1 Mês</option>
+                                       <option>3 Meses</option>
+                                       <option>6 Meses+</option>
+                                       <option>1 Ano+</option>
                                    </select>
                                </div>
 
                                <div>
-                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Detailed Comments</label>
+                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Comentários Detalhados</label>
                                    <textarea 
                                      rows={4}
                                      value={comment}
                                      onChange={(e) => setComment(e.target.value)}
-                                     placeholder="Describe the sensations, output, and feel..."
+                                     placeholder="Descreve as sensações, saída de bola e toque..."
                                      className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-sm p-3 rounded focus:border-padel-lime outline-none resize-none"
                                    />
                                </div>
@@ -456,7 +457,7 @@ const RacketDetail = () => {
                                  type="submit"
                                  className="w-full py-3 bg-white hover:bg-zinc-200 text-padel-black font-black uppercase text-xs rounded transition-colors flex items-center justify-center gap-2"
                                >
-                                   Submit Report <Send size={14} />
+                                   Enviar Relatório <Send size={14} />
                                </button>
                            </form>
                        )}
@@ -465,58 +466,7 @@ const RacketDetail = () => {
 
                 {/* Reviews List */}
                 <div className="lg:col-span-8 space-y-4">
-                    {racketReviews.length > 0 ? (
-                        racketReviews.map((review) => (
-                            <div key={review.id} className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800/50 hover:border-zinc-700 transition-colors">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-zinc-950 rounded-full flex items-center justify-center border border-zinc-800">
-                                            <UserIcon size={20} className="text-zinc-600" />
-                                        </div>
-                                        <div>
-                                            <div className="text-white font-bold text-sm">{review.userName}</div>
-                                            <div className="text-[10px] text-zinc-500 font-mono uppercase flex items-center gap-2">
-                                                <span>{new Date(review.date).toLocaleDateString()}</span>
-                                                <span>•</span>
-                                                <span className="flex items-center gap-1"><Clock size={10} /> {review.playtime}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-padel-lime/10 px-3 py-1.5 rounded border border-padel-lime/20 flex items-center gap-1.5">
-                                        <Zap size={12} className="text-padel-lime fill-current" />
-                                        <span className="text-sm font-black text-padel-lime font-mono">{review.rating}</span>
-                                    </div>
-                                </div>
-                                
-                                {/* Characteristics Mini-Grid */}
-                                {review.characteristics && (
-                                    <div className="mb-4 grid grid-cols-3 sm:grid-cols-6 gap-2 border-y border-white/5 py-3">
-                                        {(Object.entries(review.characteristics) as [string, number][]).map(([key, val]) => (
-                                            <div key={key} className="text-center">
-                                                <div className="text-[8px] text-zinc-500 uppercase tracking-wider mb-1">{key === 'rigidity' ? 'Hard' : key.substring(0,4)}</div>
-                                                <div className="text-xs font-bold text-zinc-300 font-mono">{val}</div>
-                                                <div className="h-0.5 w-full bg-zinc-800 rounded mt-1 overflow-hidden">
-                                                    <div className="h-full bg-zinc-500" style={{ width: `${val * 10}%` }}></div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                <p className="text-zinc-300 text-sm leading-relaxed italic">
-                                    "{review.comment}"
-                                </p>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-zinc-800 rounded-xl bg-zinc-900/20 text-center">
-                            <MessageSquare size={32} className="text-zinc-700 mb-4" />
-                            <h5 className="text-white font-bold uppercase italic">No Reviews Yet</h5>
-                            <p className="text-zinc-500 text-xs max-w-xs mt-2">
-                                Be the first to analyze the {racket.model} and help the community.
-                            </p>
-                        </div>
-                    )}
+                  <ReviewList reviews={racketReviews} racketModel={racket.model} />
                 </div>
             </div>
         </div>

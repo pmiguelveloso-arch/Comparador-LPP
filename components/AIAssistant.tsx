@@ -2,8 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { chatWithPadelCoach } from '../utils/aiService';
-import { MessageSquare, X, Send, Bot, Minimize2, Sparkles, Loader2, ChevronRight } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, Minimize2, Sparkles, Loader2, ChevronRight, Lock, Battery, BatteryWarning } from 'lucide-react';
 import { PlayerProfile } from '../types';
+
+const MAX_DAILY_MESSAGES = 5;
 
 const AIAssistant = () => {
   const { compareList } = useApp();
@@ -13,6 +15,9 @@ const AIAssistant = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasInitialAnalysis, setHasInitialAnalysis] = useState(false);
+  
+  // Usage Limit State
+  const [dailyCount, setDailyCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,10 +34,36 @@ const AIAssistant = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  // Load and Reset Daily Limits
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const storedDate = localStorage.getItem('ai_usage_date');
+    const storedCount = parseInt(localStorage.getItem('ai_usage_count') || '0');
+
+    if (storedDate !== today) {
+        // Reset for new day
+        localStorage.setItem('ai_usage_date', today);
+        localStorage.setItem('ai_usage_count', '0');
+        setDailyCount(0);
+    } else {
+        setDailyCount(storedCount);
+    }
+  }, []);
+
+  const incrementUsage = () => {
+      const newCount = dailyCount + 1;
+      setDailyCount(newCount);
+      localStorage.setItem('ai_usage_count', newCount.toString());
+  };
+
+  const remainingCredits = Math.max(0, MAX_DAILY_MESSAGES - dailyCount);
+
   // Trigger initial analysis when opening with items in comparison
   useEffect(() => {
     if (isOpen && compareList.length > 0 && !hasInitialAnalysis && messages.length === 0) {
-        handleInitialAnalysis();
+        if (remainingCredits > 0) {
+            handleInitialAnalysis();
+        }
     }
   }, [isOpen, compareList]);
 
@@ -41,16 +72,8 @@ const AIAssistant = () => {
       setHasInitialAnalysis(true);
       const profile = getProfile();
       
-      // Simulate a user asking for a comparison to trigger the AI
-      const contextPrompt = "Based on my profile and the rackets I've selected, which one do you recommend and why?";
-      
-      // We don't add the contextPrompt to the UI, just to the API call history context essentially
-      // But for visual consistency, let's just make the AI greet.
-      
       try {
-          // We send an empty history, but the system prompt in aiService will see the context.
-          // We can send a specific "trigger" message hidden from UI or just let the prompt handle it.
-          // Let's send a specific query to get a good opening.
+          incrementUsage(); // Consume Credit
           const response = await chatWithPadelCoach(
               [{ role: 'user', text: "I have selected these rackets. Analyze them for me based on my profile." }], 
               profile, 
@@ -69,11 +92,13 @@ const AIAssistant = () => {
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
+    if (remainingCredits <= 0) return;
 
     const newUserMsg = { role: 'user' as const, text: inputValue };
     setMessages(prev => [...prev, newUserMsg]);
     setInputValue('');
     setIsLoading(true);
+    incrementUsage(); // Consume Credit
 
     const profile = getProfile();
 
@@ -130,9 +155,11 @@ const AIAssistant = () => {
                 </div>
                 <div>
                     <h3 className="font-black text-white uppercase italic text-sm">AI Coach</h3>
-                    <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                        <span className="text-[10px] text-zinc-400 font-mono uppercase">Online</span>
+                    <div className="flex items-center gap-2">
+                        <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-[9px] font-mono font-bold uppercase ${remainingCredits > 0 ? 'bg-padel-lime/10 border-padel-lime/30 text-padel-lime' : 'bg-red-500/10 border-red-500/30 text-red-500'}`}>
+                            {remainingCredits > 0 ? <Battery size={10} /> : <Lock size={10} />}
+                            {remainingCredits}/{MAX_DAILY_MESSAGES} Credits
+                        </div>
                     </div>
                 </div>
             </div>
@@ -166,6 +193,9 @@ const AIAssistant = () => {
                                   ? "I see you're comparing rackets. Want my analysis?" 
                                   : "Ask me anything about gear, tactics, or your profile."}
                             </p>
+                            <div className="mt-4 text-[10px] text-zinc-600 font-mono uppercase">
+                                Daily Limit: {MAX_DAILY_MESSAGES} interactions
+                            </div>
                         </div>
                     )}
                     
@@ -199,40 +229,27 @@ const AIAssistant = () => {
 
                 {/* Input Area */}
                 <div className="p-3 bg-zinc-950 border-t border-zinc-800">
-                    {compareList.length > 0 && messages.length === 0 && !hasInitialAnalysis && (
-                         <div className="mb-3 flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                            <button 
-                                onClick={handleInitialAnalysis}
-                                className="whitespace-nowrap px-3 py-1.5 bg-padel-lime/10 border border-padel-lime/30 rounded-full text-[10px] font-bold text-padel-lime hover:bg-padel-lime hover:text-padel-black transition-colors uppercase"
-                            >
-                                ⚡ Compare Selected Rackets
-                            </button>
-                         </div>
-                    )}
-                    
-                    <div className="relative flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            placeholder="Ask about power, control, or spin..."
-                            className="w-full bg-zinc-900 text-white text-sm rounded-xl pl-4 pr-12 py-3 border border-zinc-800 focus:border-padel-lime focus:outline-none placeholder-zinc-600"
-                        />
-                        <button 
-                            onClick={handleSend}
-                            disabled={isLoading || !inputValue.trim()}
-                            className="absolute right-2 p-2 bg-padel-lime text-padel-black rounded-lg hover:bg-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            <Send size={16} />
-                        </button>
-                    </div>
-                </div>
-            </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default AIAssistant;
+                    {remainingCredits > 0 ? (
+                        <>
+                            {compareList.length > 0 && messages.length === 0 && !hasInitialAnalysis && (
+                                <div className="mb-3 flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                    <button 
+                                        onClick={handleInitialAnalysis}
+                                        className="whitespace-nowrap px-3 py-1.5 bg-padel-lime/10 border border-padel-lime/30 rounded-full text-[10px] font-bold text-padel-lime hover:bg-padel-lime hover:text-padel-black transition-colors uppercase"
+                                    >
+                                        ⚡ Compare Selected Rackets (1 Credit)
+                                    </button>
+                                </div>
+                            )}
+                            
+                            <div className="relative flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onKeyDown={handleKeyPress}
+                                    placeholder="Ask about power, control, or spin..."
+                                    className="w-full bg-zinc-900 text-white text-sm rounded-xl pl-4 pr-12 py-3 border border-zinc-800 focus:border-padel-lime focus:outline-none placeholder-zinc-600"
+                                />
+                                <button 
+                                    onClick={handleSend}

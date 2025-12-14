@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Racket } from '../types';
-import { Plus, Check, Zap, BarChart3, Eye } from 'lucide-react';
+import { Plus, Check, Zap, Eye } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getRacketMatch } from '../utils/matchLogic';
 
@@ -68,7 +69,7 @@ const RacketCard: React.FC<RacketCardProps> = ({ racket, showMatchScore = true, 
                 onQuickView(racket);
               }}
               className="absolute bottom-3 right-3 p-2 bg-zinc-950/80 text-zinc-400 hover:text-padel-lime hover:bg-zinc-900 rounded-lg border border-white/10 backdrop-blur opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
-              title="Quick View"
+              title="Vista Rápida"
             >
               <Eye size={18} />
             </button>
@@ -89,7 +90,7 @@ const RacketCard: React.FC<RacketCardProps> = ({ racket, showMatchScore = true, 
 
         {/* Mini Stats */}
         <div className="grid grid-cols-2 gap-3 mb-5">
-           <StatBar label="PWR" value={racket.characteristics.power} color="bg-violet-500" />
+           <StatBar label="POT" value={racket.characteristics.power} color="bg-violet-500" />
            <StatBar label="CTR" value={racket.characteristics.control} color="bg-padel-lime" />
         </div>
 
@@ -104,7 +105,7 @@ const RacketCard: React.FC<RacketCardProps> = ({ racket, showMatchScore = true, 
           }`}
         >
           {isCompared ? <Check size={14} /> : <Plus size={14} />}
-          {isCompared ? 'ADDED' : 'COMPARE'}
+          {isCompared ? 'ADICIONADO' : 'COMPARAR'}
         </button>
       </div>
     </div>

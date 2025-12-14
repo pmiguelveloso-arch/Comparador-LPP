@@ -75,6 +75,34 @@ export const authService = {
     });
   },
 
+  // Simulate Social Login
+  loginWithProvider: async (provider: 'google' | 'facebook'): Promise<User> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Check if there is an existing guest profile to attach
+            const currentGuestProfile = localStorage.getItem('player_profile');
+            let savedProfile = undefined;
+            if (currentGuestProfile) {
+                savedProfile = JSON.parse(currentGuestProfile);
+            }
+
+            // Simulate a user coming from a provider
+            const mockUser: User = {
+                id: `social-${Date.now()}`,
+                name: provider === 'google' ? 'Google User' : 'Facebook User',
+                email: `user@${provider}.com`,
+                savedProfile, // If they had a guest profile, attach it. If not, it's undefined (prompting quiz)
+                createdAt: new Date().toISOString()
+            };
+
+            // In a real app we would check if user exists in DB or create new.
+            // For this mock, we just set the session.
+            localStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
+            resolve(mockUser);
+        }, 1000);
+    });
+  },
+
   // Logout
   logout: () => {
     localStorage.removeItem(SESSION_KEY);
@@ -96,6 +124,8 @@ export const authService = {
           }
           return u;
       });
+      // If user isn't in local DB (e.g. social login not persisted to array), we just update session
+      // In a real app, social users would be in DB.
       saveDB(updatedUsers);
       
       // Update session as well

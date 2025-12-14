@@ -21,10 +21,10 @@ const Profile = () => {
       <div className="min-h-screen pt-20 flex flex-col items-center justify-center p-4 bg-padel-black bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] text-center">
         <div className="bg-zinc-900/80 p-10 rounded-2xl border border-zinc-800 backdrop-blur-sm max-w-md w-full">
             <User size={64} className="mx-auto text-zinc-700 mb-6" />
-            <h2 className="text-2xl font-black uppercase italic text-white mb-2">Profile Not Found</h2>
-            <p className="text-zinc-500 font-mono text-xs mb-8">NO ATHLETE DATA DETECTED IN LOCAL STORAGE.</p>
+            <h2 className="text-2xl font-black uppercase italic text-white mb-2">Perfil Não Encontrado</h2>
+            <p className="text-zinc-500 font-mono text-xs mb-8">NENHUM DADO DE ATLETA DETETADO LOCALMENTE.</p>
             <Link to="/quiz" className="flex items-center justify-center gap-2 bg-padel-lime text-padel-black px-8 py-3 rounded font-bold uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_20px_rgba(163,230,53,0.3)] text-xs">
-              Initialize Profile
+              Inicializar Perfil
             </Link>
         </div>
       </div>
@@ -58,12 +58,12 @@ const Profile = () => {
                         <Save size={24} />
                     </div>
                     <div>
-                        <h3 className="text-white font-bold uppercase italic">Guest Mode Active</h3>
-                        <p className="text-zinc-400 text-xs font-mono max-w-md">Your profile data is currently stored in temporary browser cache. Create an account to permanently save your stats and access them from any device.</p>
+                        <h3 className="text-white font-bold uppercase italic">Modo Convidado Ativo</h3>
+                        <p className="text-zinc-400 text-xs font-mono max-w-md">Os teus dados de perfil estão guardados temporariamente no navegador. Cria uma conta para guardar os teus dados permanentemente e aceder de qualquer dispositivo.</p>
                     </div>
                 </div>
                 <Link to="/register" className="bg-white text-padel-black px-6 py-3 rounded-lg font-bold uppercase text-xs tracking-wide hover:bg-zinc-200 transition whitespace-nowrap">
-                    Save Profile
+                    Guardar Perfil
                 </Link>
             </div>
         )}
@@ -86,25 +86,25 @@ const Profile = () => {
                     <div>
                         <div className="flex items-center gap-2 justify-center md:justify-start mb-1">
                             <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
-                                Player Identity
+                                Identidade do Jogador
                             </div>
                             {profile.style === 'ofensivo' && <Zap size={12} className="text-padel-lime" />}
                             {profile.style === 'consistente' && <Shield size={12} className="text-blue-400" />}
                         </div>
                         <h1 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter mb-1">
-                            {isAuthenticated ? user?.name : (profile.name || 'Guest Athlete')}
+                            {isAuthenticated ? user?.name : (profile.name || 'Atleta Convidado')}
                         </h1>
                         <div className="flex items-center gap-2 justify-center md:justify-start text-xs font-mono">
-                            <span className="text-white font-bold">{profile.experience} CLASS</span>
+                            <span className="text-white font-bold">{profile.experience} CLASSE</span>
                             <span className="text-zinc-600">|</span>
-                            <span className="text-padel-lime">{profile.style} ARCHETYPE</span>
+                            <span className="text-padel-lime">ARQUÉTIPO {profile.style}</span>
                         </div>
                     </div>
                 </div>
 
                 <Link to="/quiz" className="group flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 border border-zinc-700 hover:border-padel-lime px-5 py-3 rounded-xl transition-all">
                     <Edit2 size={16} className="text-zinc-400 group-hover:text-white transition-colors" />
-                    <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider group-hover:text-white">Update Data</span>
+                    <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider group-hover:text-white">Atualizar Dados</span>
                 </Link>
             </div>
 
@@ -112,26 +112,26 @@ const Profile = () => {
             <div className="mt-8 pt-6 border-t border-zinc-800 relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                     <Scale size={14} className="text-zinc-500" />
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Biometrics</h3>
+                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Biometria</h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
-                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Age</span>
-                        <span className="text-lg font-bold text-white font-mono">{profile.age} <span className="text-xs text-zinc-600">Yrs</span></span>
+                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Idade</span>
+                        <span className="text-lg font-bold text-white font-mono">{profile.age} <span className="text-xs text-zinc-600">Anos</span></span>
                     </div>
                     <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
-                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Gender</span>
+                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Género</span>
                         <span className="text-lg font-bold text-white font-mono">{profile.gender}</span>
                     </div>
                     {profile.height && (
                         <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
-                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Height</span>
+                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Altura</span>
                             <span className="text-lg font-bold text-white font-mono">{profile.height} <span className="text-xs text-zinc-600">cm</span></span>
                         </div>
                     )}
                     {profile.weight && (
                         <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-800/50 flex flex-col items-center md:items-start">
-                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Weight</span>
+                            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-wider mb-1">Peso</span>
                             <span className="text-lg font-bold text-white font-mono">{profile.weight} <span className="text-xs text-zinc-600">kg</span></span>
                         </div>
                     )}
@@ -145,7 +145,7 @@ const Profile = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-padel-lime/5 to-transparent pointer-events-none"></div>
                 <div className="relative z-10">
                     <h3 className="text-sm font-black text-white uppercase italic mb-3 flex items-center gap-2">
-                        <Cpu size={16} className="text-padel-lime" /> AI Coach Analysis
+                        <Cpu size={16} className="text-padel-lime" /> Análise do Treinador IA
                     </h3>
                     <p className="text-zinc-300 font-mono text-xs md:text-sm leading-relaxed border-l-2 border-padel-lime pl-4">
                         "{profile.aiAnalysis}"
@@ -162,12 +162,12 @@ const Profile = () => {
                 {/* Attribute Preferences */}
                 <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 h-full">
                     <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">
-                        <Activity size={16} className="text-padel-lime" /> Attribute Targets
+                        <Activity size={16} className="text-padel-lime" /> Objetivos de Atributos
                     </h3>
-                    <StatRow label="Power Output" value={profile.power} color="bg-violet-500" />
-                    <StatRow label="Control" value={profile.control} color="bg-padel-lime" />
-                    <StatRow label="Comfort/Absorb" value={profile.comfort} color="bg-blue-500" />
-                    <StatRow label="Structural Rigidity" value={profile.rigidity} color="bg-zinc-500" />
+                    <StatRow label="Potência" value={profile.power} color="bg-violet-500" />
+                    <StatRow label="Controlo" value={profile.control} color="bg-padel-lime" />
+                    <StatRow label="Conforto/Absorção" value={profile.comfort} color="bg-blue-500" />
+                    <StatRow label="Rigidez Estrutural" value={profile.rigidity} color="bg-zinc-500" />
                 </div>
             </div>
 
@@ -177,7 +177,7 @@ const Profile = () => {
                 {/* Game Context Card */}
                 <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 h-full">
                     <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">
-                        <Target size={16} className="text-padel-lime" /> Game Context
+                        <Target size={16} className="text-padel-lime" /> Contexto de Jogo
                     </h3>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -186,7 +186,7 @@ const Profile = () => {
                                 <Activity size={20} />
                             </div>
                             <div>
-                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Court Position</div>
+                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Posição no Campo</div>
                                 <div className="text-white font-bold uppercase">{profile.position || 'N/A'}</div>
                             </div>
                         </div>
@@ -196,7 +196,7 @@ const Profile = () => {
                                 <Gauge size={20} />
                             </div>
                             <div>
-                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Smash Frequency</div>
+                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Frequência de Smash</div>
                                 <div className="text-white font-bold uppercase">{profile.smash_frequency || 'N/A'}</div>
                             </div>
                         </div>
@@ -206,7 +206,7 @@ const Profile = () => {
                                 <Wind size={20} />
                             </div>
                             <div>
-                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Court Environment</div>
+                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Ambiente de Jogo</div>
                                 <div className="text-white font-bold uppercase">{profile.court_type || 'N/A'}</div>
                             </div>
                         </div>
@@ -216,7 +216,7 @@ const Profile = () => {
                                 <Wallet size={20} />
                             </div>
                             <div>
-                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Budget Tier</div>
+                                <div className="text-[10px] text-zinc-500 font-mono uppercase">Orçamento</div>
                                 <div className="text-white font-bold uppercase">{profile.budget}</div>
                             </div>
                         </div>
@@ -226,7 +226,7 @@ const Profile = () => {
                     {profile.injuries && profile.injuries.some(i => i !== 'None') && (
                         <div className="mt-6 bg-red-500/5 rounded-xl p-4 border border-red-500/20">
                              <h3 className="text-xs font-black text-red-400 uppercase italic mb-3 flex items-center gap-2">
-                                <AlertTriangle size={14} /> Medical Considerations
+                                <AlertTriangle size={14} /> Considerações Médicas
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {profile.injuries.map(injury => (
@@ -236,7 +236,7 @@ const Profile = () => {
                                 ))}
                             </div>
                             <p className="text-zinc-400 text-[10px] font-mono mt-2">
-                                * System has automatically filtered out high-vibration equipment and applied comfort-first penalties to potential matches.
+                                * O sistema filtrou automaticamente equipamento de alta vibração e aplicou penalidades em equipamentos rígidos.
                             </p>
                         </div>
                     )}
@@ -247,7 +247,7 @@ const Profile = () => {
         {/* Scouting Reports (Reviews) */}
         <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 mb-8">
             <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">
-               <MessageSquare size={16} className="text-zinc-500" /> Scouting Reports
+               <MessageSquare size={16} className="text-zinc-500" /> Relatórios de Scouting
             </h3>
 
             {userReviews.length > 0 ? (
@@ -263,7 +263,7 @@ const Profile = () => {
                              )}
                              <div className="flex-grow">
                                 <div className="flex justify-between items-start mb-1">
-                                    <span className="text-xs font-bold text-white uppercase">{racket ? racket.model : 'Unknown Gear'}</span>
+                                    <span className="text-xs font-bold text-white uppercase">{racket ? racket.model : 'Equipamento Desconhecido'}</span>
                                     <div className="flex items-center gap-1 bg-padel-lime/10 px-1.5 py-0.5 rounded border border-padel-lime/20">
                                        <Zap size={10} className="text-padel-lime fill-current" />
                                        <span className="text-[10px] font-bold text-padel-lime">{review.rating}/10</span>
@@ -274,7 +274,7 @@ const Profile = () => {
                                    <span className="text-[9px] text-zinc-600 font-mono uppercase">{new Date(review.date).toLocaleDateString()}</span>
                                    {racket && (
                                      <Link to={`/racket/${racket.id}`} className="text-[10px] text-padel-lime font-bold uppercase hover:underline flex items-center gap-1">
-                                        View Gear <ExternalLink size={8} />
+                                        Ver Equipamento <ExternalLink size={8} />
                                      </Link>
                                    )}
                                 </div>
@@ -285,8 +285,8 @@ const Profile = () => {
                 </div>
             ) : (
                 <div className="p-8 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
-                    <p className="text-zinc-500 text-xs mb-2">No gear reports submitted yet.</p>
-                    <Link to="/explore" className="text-padel-lime font-bold text-xs uppercase hover:underline">Review equipment now</Link>
+                    <p className="text-zinc-500 text-xs mb-2">Ainda não submeteste análises de equipamento.</p>
+                    <Link to="/explore" className="text-padel-lime font-bold text-xs uppercase hover:underline">Avaliar equipamento agora</Link>
                 </div>
             )}
         </div>
@@ -294,7 +294,7 @@ const Profile = () => {
         {/* Footer Action */}
         <div className="mt-8 flex justify-center">
             <Link to="/match" className="flex items-center gap-3 bg-padel-lime text-padel-black px-10 py-4 rounded-xl font-black uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_30px_rgba(163,230,53,0.3)]">
-                View Recommendations <ArrowRight size={20} strokeWidth={3} />
+                Ver Recomendações <ArrowRight size={20} strokeWidth={3} />
             </Link>
         </div>
 

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Racket, Review } from '../types';
 
@@ -14,7 +15,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider = ({ children }: { children: ReactNode }) => {
+export const AppProvider = ({ children }: { children?: ReactNode }) => {
   const [compareList, setCompareList] = useState<Racket[]>(() => {
     const saved = localStorage.getItem('compareList');
     return saved ? JSON.parse(saved) : [];

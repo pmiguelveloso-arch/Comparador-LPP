@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Target, BarChart2, Plus, ArrowUpRight, Award } from 'lucide-react';
@@ -20,9 +21,9 @@ const Home = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-zinc-400 font-mono text-xs uppercase tracking-widest mb-1">Welcome back</h2>
+            <h2 className="text-zinc-400 font-mono text-xs uppercase tracking-widest mb-1">Bem-vindo de volta</h2>
             <h1 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter">
-              Player <span className="text-padel-lime">Dashboard</span>
+              Painel do <span className="text-padel-lime">Jogador</span>
             </h1>
           </div>
           <div className="flex gap-2">
@@ -31,14 +32,14 @@ const Home = () => {
                 to="/quiz" 
                 className="flex items-center gap-2 bg-padel-lime text-padel-black px-6 py-3 rounded font-bold uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_20px_rgba(163,230,53,0.3)]"
               >
-                <Plus size={18} strokeWidth={3} /> New Analysis
+                <Plus size={18} strokeWidth={3} /> Nova Análise
               </Link>
             ) : (
                <Link 
                 to="/match" 
                 className="flex items-center gap-2 bg-white text-padel-black px-6 py-3 rounded font-bold uppercase tracking-wide hover:bg-zinc-200 transition"
               >
-                <Target size={18} strokeWidth={3} /> View Matches
+                <Target size={18} strokeWidth={3} /> Ver Resultados
               </Link>
             )}
           </div>
@@ -58,18 +59,18 @@ const Home = () => {
             <div className="relative z-20 p-8 h-full flex flex-col justify-between min-h-[300px]">
               <div className="flex items-start justify-between">
                  <div className="bg-padel-lime/20 text-padel-lime px-3 py-1 rounded text-[10px] font-bold font-mono uppercase border border-padel-lime/30">
-                   AI Analysis
+                   Análise IA
                  </div>
                  <ArrowUpRight className="text-white opacity-50 group-hover:text-padel-lime group-hover:opacity-100 transition-all" />
               </div>
               
               <div>
-                <h3 className="text-3xl font-black text-white uppercase italic mb-2">Find Your Weapon</h3>
+                <h3 className="text-3xl font-black text-white uppercase italic mb-2">Encontra a Tua Arma</h3>
                 <p className="text-zinc-400 max-w-md mb-6 font-mono text-sm">
-                  Complete the biometric performance quiz to unlock personalized racket recommendations based on your playstyle.
+                  Completa o teste biométrico de performance para desbloquear recomendações personalizadas baseadas no teu estilo.
                 </p>
                 <Link to="/quiz" className="inline-flex items-center gap-2 text-white font-bold hover:text-padel-lime transition-colors uppercase tracking-wide text-sm border-b border-white/20 pb-1 hover:border-padel-lime">
-                  Start Assessment <ArrowRight size={16} />
+                  Iniciar Avaliação <ArrowRight size={16} />
                 </Link>
               </div>
             </div>
@@ -84,10 +85,10 @@ const Home = () => {
                 <div className="p-3 bg-zinc-950 rounded-lg text-zinc-500 group-hover:text-white transition-colors">
                   <Zap size={24} />
                 </div>
-                <span className="text-zinc-600 text-[10px] font-mono uppercase">Live Data</span>
+                <span className="text-zinc-600 text-[10px] font-mono uppercase">Dados em Tempo Real</span>
               </div>
               <div className="text-4xl font-black text-white font-mono">{RACKETS.length}</div>
-              <div className="text-zinc-500 text-xs font-bold uppercase mt-1">Pro Models Indexed</div>
+              <div className="text-zinc-500 text-xs font-bold uppercase mt-1">Modelos Pro Indexados</div>
             </div>
 
             {/* Catalog Link */}
@@ -99,8 +100,8 @@ const Home = () => {
                  <ArrowRight className="text-zinc-600 group-hover:text-white transition-colors" />
               </div>
               <div>
-                 <div className="text-xl font-bold text-white uppercase italic">Gear Lab</div>
-                 <div className="text-zinc-500 text-xs font-mono mt-1">BROWSE FULL CATALOG</div>
+                 <div className="text-xl font-bold text-white uppercase italic">Raquetes</div>
+                 <div className="text-zinc-500 text-xs font-mono mt-1">VER CATÁLOGO COMPLETO</div>
               </div>
             </Link>
           </div>
@@ -111,10 +112,10 @@ const Home = () => {
           <h3 className="text-xl font-black text-white uppercase italic flex items-center gap-2">
             <span className="w-2 h-6 bg-padel-lime skew-x-[-12deg] block"></span>
             <span className="flex items-center gap-2">
-               Editor's Choice <Award size={18} className="text-padel-lime" />
+               Escolha do Editor <Award size={18} className="text-padel-lime" />
             </span>
           </h3>
-          <Link to="/explore" className="text-xs font-bold text-zinc-500 hover:text-white uppercase tracking-wider">View All</Link>
+          <Link to="/explore" className="text-xs font-bold text-zinc-500 hover:text-white uppercase tracking-wider">Ver Tudo</Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

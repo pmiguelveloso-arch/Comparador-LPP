@@ -4,7 +4,6 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CompareBar from './components/CompareBar';
-import AIAssistant from './components/AIAssistant';
 import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Quiz from './pages/Quiz';
@@ -13,6 +12,7 @@ import RacketDetail from './pages/RacketDetail';
 import Compare from './pages/Compare';
 import Profile from './pages/Profile';
 import BrandLanding from './pages/BrandLanding';
+import AllBrands from './pages/AllBrands';
 import GearScanner from './pages/GearScanner';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -30,6 +30,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/explore" element={<Explore />} />
+                <Route path="/brands" element={<AllBrands />} />
                 <Route path="/brands/:brandName" element={<BrandLanding />} />
                 <Route path="/quiz" element={<Quiz />} />
                 <Route path="/match" element={<MatchResults />} />
@@ -42,7 +43,6 @@ function App() {
               </Routes>
             </main>
             <CompareBar />
-            <AIAssistant />
             <Footer />
           </div>
         </Router>

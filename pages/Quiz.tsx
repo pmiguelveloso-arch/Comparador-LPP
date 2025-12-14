@@ -48,37 +48,37 @@ const Quiz = () => {
     let isValid = true;
 
     if (currentStep === 1) { // The Athlete (Bio)
-        if (!formData.gender) newErrors.gender = "Select gender.";
-        if (!formData.age || formData.age < 10) newErrors.age = "Invalid age.";
-        if (!formData.height) newErrors.height = "Height required for leverage calc.";
-        if (!formData.weight) newErrors.weight = "Weight required for stability calc.";
+        if (!formData.gender) newErrors.gender = "Selecione o género.";
+        if (!formData.age || formData.age < 10) newErrors.age = "Idade inválida.";
+        if (!formData.height) newErrors.height = "Altura necessária para cálculo de alavanca.";
+        if (!formData.weight) newErrors.weight = "Peso necessário para cálculo de estabilidade.";
     }
 
     if (currentStep === 2) { // Medical
-        if (formData.injuries?.length === 0) newErrors.injuries = "Select injury status.";
+        if (formData.injuries?.length === 0) newErrors.injuries = "Selecione o estado de lesão.";
     }
 
     if (currentStep === 3) { // The Game (Context)
-        if (!formData.experience) newErrors.experience = "Select level.";
-        if (!formData.frequency) newErrors.frequency = "Select frequency.";
-        if (!formData.court_type) newErrors.court_type = "Select court environment.";
+        if (!formData.experience) newErrors.experience = "Selecione o nível.";
+        if (!formData.frequency) newErrors.frequency = "Selecione a frequência.";
+        if (!formData.court_type) newErrors.court_type = "Selecione o ambiente de jogo.";
     }
 
     if (currentStep === 4) { // Macro Tactics
-        if (!formData.position) newErrors.position = "Select position.";
-        if (!formData.style) newErrors.style = "Select archetype.";
-        if (!formData.smash_frequency) newErrors.smash_frequency = "Select overhead frequency.";
+        if (!formData.position) newErrors.position = "Selecione a posição.";
+        if (!formData.style) newErrors.style = "Selecione o arquétipo.";
+        if (!formData.smash_frequency) newErrors.smash_frequency = "Selecione frequência de smash.";
     }
 
     if (currentStep === 5) { // Micro Tactics (Advanced)
-        if (!formData.net_style) newErrors.net_style = "Select net behavior.";
-        if (!formData.baseline_style) newErrors.baseline_style = "Select defense style.";
-        if (!formData.game_pace) newErrors.game_pace = "Select preferred pace.";
+        if (!formData.net_style) newErrors.net_style = "Selecione comportamento na rede.";
+        if (!formData.baseline_style) newErrors.baseline_style = "Selecione estilo defensivo.";
+        if (!formData.game_pace) newErrors.game_pace = "Selecione ritmo preferido.";
     }
 
     if (currentStep === 6) { // Preferences
-         if (!formData.touch_preference) newErrors.touch_preference = "Select feel preference.";
-         if (!formData.budget) newErrors.budget = "Select budget.";
+         if (!formData.touch_preference) newErrors.touch_preference = "Selecione preferência de toque.";
+         if (!formData.budget) newErrors.budget = "Selecione orçamento.";
     }
 
     setErrors(newErrors);
@@ -157,12 +157,12 @@ const Quiz = () => {
                     <Cpu size={48} className="text-padel-lime animate-pulse" />
                 </div>
                 <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">
-                    Neural Engine <span className="text-padel-lime">Processing</span>
+                    Processamento <span className="text-padel-lime">Neural</span>
                 </h2>
                 <div className="flex flex-col gap-2 text-zinc-500 font-mono text-xs uppercase tracking-widest mt-4">
-                    <span className="animate-fade-in-up" style={{animationDelay: '0.2s'}}>Simulating Game Scenarios...</span>
-                    <span className="animate-fade-in-up" style={{animationDelay: '0.8s'}}>Correlating Biometrics...</span>
-                    <span className="animate-fade-in-up" style={{animationDelay: '1.5s'}}>Optimizing Gear Match...</span>
+                    <span className="animate-fade-in-up" style={{animationDelay: '0.2s'}}>A simular cenários de jogo...</span>
+                    <span className="animate-fade-in-up" style={{animationDelay: '0.8s'}}>A correlacionar dados biométricos...</span>
+                    <span className="animate-fade-in-up" style={{animationDelay: '1.5s'}}>A otimizar correspondência de equipamento...</span>
                 </div>
             </div>
         </div>
@@ -186,8 +186,8 @@ const Quiz = () => {
                  <Activity size={20} />
                </div>
                <div>
-                 <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Deep Analysis Module</div>
-                 <div className="text-white font-bold uppercase italic">Phase {step} <span className="text-zinc-600">/ {totalSteps}</span></div>
+                 <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Módulo de Análise Profunda</div>
+                 <div className="text-white font-bold uppercase italic">Fase {step} <span className="text-zinc-600">/ {totalSteps}</span></div>
                </div>
              </div>
              
@@ -206,7 +206,7 @@ const Quiz = () => {
             {Object.keys(errors).length > 0 && (
                 <div className="absolute top-0 left-0 w-full bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center gap-2 animate-fade-in-down rounded-t-xl z-20">
                     <AlertCircle size={14} className="text-red-500" />
-                    <span className="text-red-500 text-xs font-bold uppercase tracking-wide">Missing required data points</span>
+                    <span className="text-red-500 text-xs font-bold uppercase tracking-wide">Faltam dados obrigatórios</span>
                 </div>
             )}
 
@@ -214,16 +214,16 @@ const Quiz = () => {
             {step === 1 && (
               <div className="flex-grow space-y-8 animate-fade-in-up pt-2">
                 <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">The Athlete</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">BIOMETRIC DATA FOR LEVERAGE & STABILITY CALCULATION</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">O Atleta</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">DADOS BIOMÉTRICOS PARA CÁLCULO DE ALAVANCA E ESTABILIDADE</p>
                 </div>
                 
                 {/* Gender */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <div className="flex items-center mb-3">
-                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Gender</label>
-                            <Tooltip text="Baseline for grip size and standard weight references." />
+                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Género</label>
+                            <Tooltip text="Referência para tamanho de grip e peso padrão." />
                         </div>
                         <div className="flex gap-2">
                             {['M', 'F', 'Outro'].map(opt => (
@@ -244,12 +244,12 @@ const Quiz = () => {
 
                     <div>
                          <div className="flex items-center mb-3">
-                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Age</label>
+                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Idade</label>
                          </div>
                          <input 
                             type="number" 
                             className={`w-full px-4 py-3 bg-zinc-900 border rounded text-white focus:border-padel-lime outline-none font-mono placeholder-zinc-700 ${errors.age ? 'border-red-500' : 'border-zinc-800'}`}
-                            placeholder="Years"
+                            placeholder="Anos"
                             value={formData.age || ''}
                             onChange={(e) => updateProfile('age', parseInt(e.target.value))}
                         />
@@ -260,15 +260,15 @@ const Quiz = () => {
                 <div>
                      <div className="flex items-center gap-2 mb-4">
                         <Scale size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Physique Analysis</label>
-                        <Tooltip text="Heavier players need heavier rackets for stability (Newton's 2nd Law). Taller players have more leverage." />
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Análise Física</label>
+                        <Tooltip text="Jogadores mais pesados conseguem lidar com raquetes mais pesadas (2ª Lei de Newton). Jogadores altos têm mais alavanca." />
                      </div>
                      <div className="grid grid-cols-2 gap-4">
                         <div>
                              <input 
                                 type="number" 
                                 className={`w-full px-4 py-3 bg-zinc-900 border rounded text-white focus:border-padel-lime outline-none font-mono ${errors.height ? 'border-red-500' : 'border-zinc-800'}`}
-                                placeholder="Height (cm)"
+                                placeholder="Altura (cm)"
                                 value={formData.height || ''}
                                 onChange={(e) => updateProfile('height', parseInt(e.target.value))}
                             />
@@ -277,7 +277,7 @@ const Quiz = () => {
                              <input 
                                 type="number" 
                                 className={`w-full px-4 py-3 bg-zinc-900 border rounded text-white focus:border-padel-lime outline-none font-mono ${errors.weight ? 'border-red-500' : 'border-zinc-800'}`}
-                                placeholder="Weight (kg)"
+                                placeholder="Peso (kg)"
                                 value={formData.weight || ''}
                                 onChange={(e) => updateProfile('weight', parseInt(e.target.value))}
                             />
@@ -291,14 +291,14 @@ const Quiz = () => {
             {step === 2 && (
               <div className="flex-grow space-y-8 animate-fade-in-up pt-2">
                  <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Medical History</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">SAFETY PROTOCOLS & VIBRATION DAMPENING</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Histórico Médico</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">PROTOCOLOS DE SEGURANÇA & ABSORÇÃO DE VIBRAÇÕES</p>
                 </div>
                 
                 <div>
                     <div className="flex items-center gap-2 mb-6">
                         <HeartPulse size={16} className="text-red-500" />
-                        <label className="text-xs font-bold text-white uppercase tracking-wider font-mono">Active Injuries</label>
+                        <label className="text-xs font-bold text-white uppercase tracking-wider font-mono">Lesões Ativas</label>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         {['None', 'Elbow', 'Shoulder', 'Wrist'].map(inj => (
@@ -311,13 +311,13 @@ const Quiz = () => {
                                      : errors.injuries ? 'border-red-500/50 text-zinc-500' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                                 }`}
                             >
-                                {inj}
+                                {inj === 'None' ? 'Nenhuma' : inj === 'Elbow' ? 'Cotovelo' : inj === 'Shoulder' ? 'Ombro' : 'Pulso'}
                                 {formData.injuries?.includes(inj) && <Activity size={16} />}
                             </button>
                         ))}
                     </div>
                     <p className="mt-4 text-[10px] text-zinc-500 font-mono border-l-2 border-red-900 pl-3">
-                        * Reporting arm injuries will automatically filter out high-balance and high-stiffness rackets to prevent aggravation.
+                        * Reportar lesões no braço irá filtrar automaticamente raquetes de balanço alto e rigidez elevada para prevenir agravamento.
                     </p>
                 </div>
               </div>
@@ -327,25 +327,25 @@ const Quiz = () => {
             {step === 3 && (
               <div className="flex-grow space-y-6 animate-fade-in-up pt-2">
                 <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Game Context</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">ENVIRONMENT & EXPERIENCE LEVEL</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Contexto de Jogo</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">AMBIENTE & NÍVEL DE EXPERIÊNCIA</p>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* Experience */}
                     <div>
                         <div className="flex items-center mb-3">
-                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Level</label>
+                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Nível</label>
                         </div>
                         <select 
                             className={`w-full px-4 py-3 bg-zinc-900 border rounded text-white focus:border-padel-lime outline-none text-xs font-bold uppercase ${errors.experience ? 'border-red-500' : 'border-zinc-800'}`}
                             value={formData.experience}
                             onChange={(e) => updateProfile('experience', e.target.value)}
                         >
-                            <option value="" disabled>Select Level</option>
-                            <option value="Iniciante">Beginner (Class 5/4)</option>
-                            <option value="Intermédio">Intermediate (Class 3)</option>
-                            <option value="Avançado">Advanced (Class 2/1)</option>
+                            <option value="" disabled>Selecionar Nível</option>
+                            <option value="Iniciante">Iniciante (Classe 5/4)</option>
+                            <option value="Intermédio">Intermédio (Classe 3)</option>
+                            <option value="Avançado">Avançado (Classe 2/1)</option>
                             <option value="Profissional">Pro Tour</option>
                         </select>
                     </div>
@@ -353,14 +353,14 @@ const Quiz = () => {
                     {/* Frequency */}
                     <div>
                         <div className="flex items-center mb-3">
-                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Frequency</label>
+                            <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Frequência</label>
                         </div>
                         <select 
                             className={`w-full px-4 py-3 bg-zinc-900 border rounded text-white focus:border-padel-lime outline-none text-xs font-bold uppercase ${errors.frequency ? 'border-red-500' : 'border-zinc-800'}`}
                             value={formData.frequency}
                             onChange={(e) => updateProfile('frequency', e.target.value)}
                         >
-                            <option value="" disabled>Select Frequency</option>
+                            <option value="" disabled>Selecionar Frequência</option>
                             <option>Ocasional (1x mês)</option>
                             <option>1-2x semana</option>
                             <option>3-4x semana</option>
@@ -373,14 +373,14 @@ const Quiz = () => {
                 <div>
                      <div className="flex items-center gap-2 mb-3">
                         <Sun size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Primary Court Environment</label>
-                        <Tooltip text="Outdoor conditions (wind/cold) often require softer or more powerful rackets compared to fast Indoor courts." />
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Ambiente de Jogo Principal</label>
+                        <Tooltip text="Condições outdoor (vento/frio) requerem frequentemente raquetes mais macias ou potentes comparadas com Indoor rápido." />
                      </div>
                      <div className="grid grid-cols-3 gap-3">
                         {[
                             { id: 'indoor', label: 'Indoor', icon: <Target size={14} /> },
                             { id: 'outdoor', label: 'Outdoor', icon: <Wind size={14} /> },
-                            { id: 'mixed', label: 'Mixed', icon: <Activity size={14} /> }
+                            { id: 'mixed', label: 'Misto', icon: <Activity size={14} /> }
                         ].map(opt => (
                             <button
                                 key={opt.id}
@@ -404,17 +404,17 @@ const Quiz = () => {
             {step === 4 && (
               <div className="flex-grow space-y-8 animate-fade-in-up pt-2">
                  <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Macro Strategy</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">POSITIONING & GENERAL ARCHETYPE</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Macro Estratégia</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">POSICIONAMENTO & ARQUÉTIPO GERAL</p>
                 </div>
                 
                 {/* Position */}
                 <div>
-                  <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider font-mono">Court Side</label>
+                  <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider font-mono">Lado do Campo</label>
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { val: 'esquerda', label: 'Backhand (Left)', sub: 'Aggressive' },
-                      { val: 'direita', label: 'Forehand (Right)', sub: 'Tactical' }
+                      { val: 'esquerda', label: 'Esquerda (Backhand)', sub: 'Agressivo' },
+                      { val: 'direita', label: 'Direita (Forehand)', sub: 'Tático' }
                     ].map(opt => (
                       <button
                         key={opt.val}
@@ -434,12 +434,12 @@ const Quiz = () => {
 
                 {/* Archetype */}
                 <div>
-                  <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider font-mono">Playstyle Archetype</label>
+                  <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider font-mono">Arquétipo de Jogo</label>
                   <div className="flex gap-2">
                     {[
-                      { val: 'ofensivo', label: 'Attacker' },
-                      { val: 'equilibrado', label: 'Hybrid' },
-                      { val: 'consistente', label: 'Defender' }
+                      { val: 'ofensivo', label: 'Atacante' },
+                      { val: 'equilibrado', label: 'Híbrido' },
+                      { val: 'consistente', label: 'Defensor' }
                     ].map(opt => (
                       <button
                         key={opt.val}
@@ -460,14 +460,14 @@ const Quiz = () => {
                 <div>
                      <div className="flex items-center gap-2 mb-3">
                         <Gauge size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Smash Frequency</label>
-                        <Tooltip text="How often do you attempt a smash to finish the point? High frequency demands specific head-heavy balances." />
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Frequência de Smash</label>
+                        <Tooltip text="Com que frequência tentas o smash para acabar o ponto? Alta frequência exige balanços de cabeça específicos." />
                      </div>
                      <div className="grid grid-cols-3 gap-3">
                         {[
-                            { id: 'low', label: 'Low', sub: 'Placement' },
-                            { id: 'medium', label: 'Med', sub: 'Mixed' },
-                            { id: 'high', label: 'High', sub: 'Power' }
+                            { id: 'low', label: 'Baixa', sub: 'Colocação' },
+                            { id: 'medium', label: 'Média', sub: 'Misto' },
+                            { id: 'high', label: 'Alta', sub: 'Potência' }
                         ].map(opt => (
                             <button
                                 key={opt.id}
@@ -490,22 +490,22 @@ const Quiz = () => {
              {step === 5 && (
               <div className="flex-grow space-y-8 animate-fade-in-up pt-2">
                  <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Tactical DNA</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">MICRO-STRATEGY & SITUATIONAL PREFERENCES</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">ADN Tático</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">MICRO-ESTRATÉGIA & PREFERÊNCIAS SITUACIONAIS</p>
                 </div>
                 
                 {/* Net Style */}
                 <div>
                    <div className="flex items-center gap-2 mb-3">
                         <Sword size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Net Behavior</label>
-                        <Tooltip text="How do you handle volleys? Do you punch through them or place them?" />
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Comportamento na Rede</label>
+                        <Tooltip text="Como geres os voleios? Atacas a bola (punch) ou colocas?" />
                     </div>
                    <div className="grid grid-cols-3 gap-3">
                       {[
-                        { id: 'aggressive', label: 'Aggressive', desc: 'Punch Volleys' },
-                        { id: 'control', label: 'Placement', desc: 'Surgical Setup' },
-                        { id: 'blocking', label: 'Blocker', desc: 'Defensive Net' }
+                        { id: 'aggressive', label: 'Agressivo', desc: 'Voleios Secos' },
+                        { id: 'control', label: 'Colocação', desc: 'Preparação Cirúrgica' },
+                        { id: 'blocking', label: 'Bloqueador', desc: 'Rede Defensiva' }
                       ].map(opt => (
                         <button
                           key={opt.id}
@@ -527,13 +527,13 @@ const Quiz = () => {
                 <div>
                    <div className="flex items-center gap-2 mb-3">
                         <Shield size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Defense Style</label>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Estilo Defensivo</label>
                     </div>
                    <div className="grid grid-cols-3 gap-3">
                       {[
-                        { id: 'lob', label: 'Lob Master', desc: 'High Balloons' },
-                        { id: 'counter', label: 'Counter', desc: 'Chiquitas/Fast' },
-                        { id: 'power', label: 'Power Def', desc: 'Hard blocks' }
+                        { id: 'lob', label: 'Mestre do Lob', desc: 'Balões Altos' },
+                        { id: 'counter', label: 'Contra-ataque', desc: 'Chiquitas/Rápido' },
+                        { id: 'power', label: 'Bloqueio', desc: 'Bloqueios Duros' }
                       ].map(opt => (
                         <button
                           key={opt.id}
@@ -555,13 +555,13 @@ const Quiz = () => {
                 <div>
                    <div className="flex items-center gap-2 mb-3">
                         <Zap size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Preferred Pace</label>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Ritmo Preferido</label>
                     </div>
                    <div className="flex gap-3">
                       {[
-                        { id: 'fast', label: 'Explosive / Fast' },
-                        { id: 'variable', label: 'Variable / Adaptive' },
-                        { id: 'slow', label: 'Slow / Strategic' }
+                        { id: 'fast', label: 'Explosivo / Rápido' },
+                        { id: 'variable', label: 'Variável / Adaptativo' },
+                        { id: 'slow', label: 'Lento / Estratégico' }
                       ].map(opt => (
                         <button
                           key={opt.id}
@@ -585,22 +585,22 @@ const Quiz = () => {
             {step === 6 && (
                <div className="flex-grow space-y-8 animate-fade-in-up pt-2">
                  <div className="border-b border-zinc-800 pb-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Final Config</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">SENSORIAL PREFERENCES & INVESTMENT</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Configuração Final</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1">PREFERÊNCIAS SENSORIAIS & INVESTIMENTO</p>
                 </div>
 
                 {/* Touch */}
                 <div>
                      <div className="flex items-center gap-2 mb-4">
                         <Activity size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Touch Preference</label>
-                        <Tooltip text="Do you prefer the ball to exit fast (Soft/Comfort) or do you prefer to feel the impact (Hard/Control)?" />
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Preferência de Toque</label>
+                        <Tooltip text="Preferes que a bola saia rápido (Soft/Conforto) ou preferes sentir o impacto (Hard/Controlo)?" />
                      </div>
                      <div className="grid grid-cols-3 gap-3">
                         {[
-                            { id: 'soft', label: 'Soft', sub: 'Comfort & Exit' },
-                            { id: 'medium', label: 'Medium', sub: 'Balanced' },
-                            { id: 'hard', label: 'Hard', sub: 'Dry & Control' }
+                            { id: 'soft', label: 'Soft', sub: 'Conforto & Saída' },
+                            { id: 'medium', label: 'Médio', sub: 'Equilibrado' },
+                            { id: 'hard', label: 'Duro', sub: 'Seco & Controlo' }
                         ].map(opt => (
                             <button
                                 key={opt.id}
@@ -622,14 +622,14 @@ const Quiz = () => {
                 <div>
                     <div className="flex items-center gap-2 mb-3">
                         <Wallet size={14} className="text-padel-lime" />
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Budget Tier</label>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider font-mono">Orçamento</label>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         {[
-                            { id: 'economy', label: 'Economy', sub: '< 160€' },
+                            { id: 'economy', label: 'Económico', sub: '< 160€' },
                             { id: 'performance', label: 'Performance', sub: '160€ - 260€' },
                             { id: 'premium', label: 'Premium', sub: '> 260€' },
-                            { id: 'unlimited', label: 'Unlimited', sub: 'Any Price' }
+                            { id: 'unlimited', label: 'Ilimitado', sub: 'Qualquer Preço' }
                         ].map(opt => (
                             <button
                                 key={opt.id}
@@ -657,7 +657,7 @@ const Quiz = () => {
                 disabled={step === 1}
                 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${step === 1 ? 'text-zinc-800' : 'text-zinc-400 hover:text-white'}`}
               >
-                <ArrowLeft size={14} /> Back
+                <ArrowLeft size={14} /> Voltar
               </button>
               
               <button 
@@ -665,7 +665,7 @@ const Quiz = () => {
                 disabled={isAnalyzing}
                 className="bg-white hover:bg-zinc-200 text-padel-black px-8 py-3 rounded font-black uppercase tracking-wide text-xs flex items-center gap-2 transition-transform active:scale-95 shadow-lg shadow-white/10"
               >
-                {step === totalSteps ? 'Process with AI' : 'Next Phase'}
+                {step === totalSteps ? 'Processar com IA' : 'Próxima Fase'}
                 {step !== totalSteps && <ArrowRight size={14} />}
                 {step === totalSteps && <Cpu size={14} />}
               </button>

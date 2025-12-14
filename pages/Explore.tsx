@@ -35,11 +35,11 @@ const Explore = () => {
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-zinc-800 pb-6">
             <div>
-              <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter">Gear <span className="text-zinc-700">Lab</span></h1>
-              <p className="text-zinc-500 font-mono text-xs mt-1">FULL EQUIPMENT DATABASE</p>
+              <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter">Raquetes</h1>
+              <p className="text-zinc-500 font-mono text-xs mt-1">BASE DE DADOS COMPLETA</p>
             </div>
             <div className="text-xs font-bold font-mono text-padel-lime bg-padel-lime/10 px-3 py-1 rounded border border-padel-lime/20">
-              {filteredRackets.length} UNITS DETECTED
+              {filteredRackets.length} UNIDADES DETETADAS
             </div>
         </div>
         
@@ -51,7 +51,7 @@ const Explore = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 group-focus-within:text-padel-lime transition-colors" size={18} />
               <input 
                 type="text" 
-                placeholder="SEARCH DATABASE..." 
+                placeholder="PESQUISAR BASE DE DADOS..." 
                 className="w-full pl-10 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded text-white placeholder-zinc-700 focus:border-padel-lime outline-none transition-all font-mono text-sm uppercase"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -65,7 +65,7 @@ const Explore = () => {
                       value={selectedBrand}
                       onChange={(e) => setSelectedBrand(e.target.value)}
                     >
-                      <option value="Todas">All Brands</option>
+                      <option value="Todas">Todas as Marcas</option>
                       {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
                     <SlidersHorizontal className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 pointer-events-none" size={14} />
@@ -79,7 +79,7 @@ const Explore = () => {
                       value={selectedShape}
                       onChange={(e) => setSelectedShape(e.target.value)}
                     >
-                      <option value="Todas">All Shapes</option>
+                      <option value="Todas">Todos os Formatos</option>
                       <option value="redonda">Redonda</option>
                       <option value="lágrima">Lágrima</option>
                       <option value="diamante">Diamante</option>
@@ -106,13 +106,13 @@ const Explore = () => {
         ) : (
           <div className="flex flex-col items-center justify-center py-20 bg-zinc-900/50 rounded-xl border border-dashed border-zinc-800">
             <Filter size={48} className="text-zinc-800 mb-4" />
-            <h3 className="text-xl font-bold text-white uppercase italic">No Data Found</h3>
-            <p className="text-zinc-600 font-mono text-xs mt-2">Adjust search parameters to retrieve results.</p>
+            <h3 className="text-xl font-bold text-white uppercase italic">Sem Dados</h3>
+            <p className="text-zinc-600 font-mono text-xs mt-2">Ajusta os filtros para ver resultados.</p>
             <button 
                 onClick={() => {setSearchTerm(''); setSelectedBrand('Todas'); setSelectedShape('Todas')}}
                 className="mt-6 text-padel-lime text-xs font-bold uppercase tracking-widest hover:underline"
             >
-                Reset Filters
+                Limpar Filtros
             </button>
           </div>
         )}

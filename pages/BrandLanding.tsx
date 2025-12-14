@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RACKETS } from '../data/rackets';
@@ -6,57 +7,7 @@ import RacketCardFull from '../components/RacketCardFull';
 import { Racket } from '../types';
 import { ArrowLeft, Target, Award, Zap, BarChart2 } from 'lucide-react';
 import { getRacketMatch } from '../utils/matchLogic';
-
-// Mock Data for Brand Metadata
-// EDITAR AQUI: Altere os links em 'cover' para mudar a imagem de fundo
-const BRAND_META: Record<string, { desc: string; cover: string; slogan: string }> = {
-  Bullpadel: {
-    slogan: "The Padel Specialist",
-    desc: "Leading the industry with innovation and design. Bullpadel is the choice of champions like Paquito Navarro and Juan Tello, offering maximum power and precision engineering.",
-    cover: "https://images.unsplash.com/photo-1626244422184-e8674d852a41?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Nox: {
-    slogan: "Makes You Improve",
-    desc: "Engineered for performance. Home of Agustín Tapia, Nox rackets are renowned for their incredible sweet spot and anti-vibration technology tailored for every level.",
-    cover: "https://images.unsplash.com/photo-1599474924187-334a405be634?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Adidas: {
-    slogan: "All For Padel",
-    desc: "German engineering meets padel court dominance. Featuring the Metalbone and Adipower series, Adidas delivers customizable weight systems and explosive power.",
-    cover: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Head: {
-    slogan: "Performance for Every Player",
-    desc: "Advanced Auxetic technology for sensational feel. Head dominates the tour with Arturo Coello and Ari Sánchez, focusing on speed and control.",
-    cover: "https://images.unsplash.com/photo-1628779238951-be2c9f2a07f4?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Kuikma: {
-    slogan: "Precision & Value",
-    desc: "Developed by Decathlon's dedicated padel center in Madrid. High-performance materials at an unbeatable price point, tested by Horacio Álvarez Clementi.",
-    cover: "https://images.unsplash.com/photo-1610342517865-c323f46f3325?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  StarVie: {
-    slogan: "Made in Spain",
-    desc: "Handcrafted excellence. One of the few brands manufacturing directly in Spain, ensuring premium quality control and unique material compositions.",
-    cover: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Babolat: {
-    slogan: "Play Your Own Game",
-    desc: "Explosive power and precision. The weapon of choice for Juan Lebrón, featuring specialized carbon structures for technical attackers.",
-    cover: "https://images.unsplash.com/photo-1530915516966-23b599de47b3?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  },
-  Siux: {
-    slogan: "Feel The Padel",
-    desc: "Avant-garde technology and varied molds. Siux offers a vast catalog favored by pros like Sanyo Gutiérrez and Stupa for its versatility.",
-    cover: "https://images.unsplash.com/photo-1628779238951-be2c9f2a07f4?q=80&w=2000&auto=format&fit=crop" // <--- INSIRA AQUI A IMAGEM DE FUNDO
-  }
-};
-
-const DEFAULT_META = {
-  slogan: "Professional Padel Gear",
-  desc: "Explore our collection of high-performance rackets designed for players who demand the best.",
-  cover: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=2000&auto=format&fit=crop"
-};
+import { BRAND_META, DEFAULT_META } from '../data/brands';
 
 const BrandLanding = () => {
   const { brandName } = useParams();
@@ -94,7 +45,7 @@ const BrandLanding = () => {
         <div className="absolute bottom-0 left-0 w-full z-20 px-4 sm:px-6 lg:px-8 pb-10">
           <div className="max-w-7xl mx-auto">
              <Link to="/explore" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-4 text-xs font-bold uppercase tracking-widest transition-colors">
-                <ArrowLeft size={14} /> Back to Catalog
+                <ArrowLeft size={14} /> Voltar às Raquetes
              </Link>
              <h1 className="text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter mb-2">
                {normalizedBrand}
@@ -117,28 +68,28 @@ const BrandLanding = () => {
                <div className="p-2 bg-zinc-800 rounded text-padel-lime"><BarChart2 size={20} /></div>
                <div>
                  <div className="text-xl font-bold text-white font-mono">{brandRackets.length}</div>
-                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Models Indexed</div>
+                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Modelos Indexados</div>
                </div>
             </div>
             <div className="flex items-center gap-3">
                <div className="p-2 bg-zinc-800 rounded text-violet-500"><Zap size={20} /></div>
                <div>
                  <div className="text-xl font-bold text-white font-mono">{avgPower}/10</div>
-                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Avg. Power</div>
+                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Média Potência</div>
                </div>
             </div>
             <div className="flex items-center gap-3">
                <div className="p-2 bg-zinc-800 rounded text-blue-500"><Target size={20} /></div>
                <div>
                  <div className="text-xl font-bold text-white font-mono">{avgControl}/10</div>
-                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Avg. Control</div>
+                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Média Controlo</div>
                </div>
             </div>
             <div className="flex items-center gap-3">
                <div className="p-2 bg-zinc-800 rounded text-amber-500"><Award size={20} /></div>
                <div>
                  <div className="text-xl font-bold text-white font-mono">Pro</div>
-                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Series Tier</div>
+                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Nível de Série</div>
                </div>
             </div>
           </div>
@@ -150,10 +101,10 @@ const BrandLanding = () => {
          <div className="flex justify-between items-end mb-8">
             <h2 className="text-2xl font-black text-white uppercase italic flex items-center gap-2">
                 <span className="w-2 h-6 bg-padel-lime skew-x-[-12deg] block"></span>
-                Available Models
+                Modelos Disponíveis
             </h2>
             <div className="text-[10px] font-mono text-zinc-500 uppercase">
-                Sorted by Match Relevance
+                Ordenado por Relevância
             </div>
          </div>
 
@@ -170,9 +121,9 @@ const BrandLanding = () => {
             </div>
          ) : (
             <div className="p-12 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-900/50">
-               <p className="text-zinc-500">No rackets found for this brand in the database.</p>
+               <p className="text-zinc-500">Nenhuma raquete encontrada para esta marca na base de dados.</p>
                <Link to="/explore" className="text-padel-lime text-sm font-bold mt-4 inline-block hover:underline">
-                 View all brands
+                 Ver todas as marcas
                </Link>
             </div>
          )}

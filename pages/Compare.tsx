@@ -14,15 +14,15 @@ const Compare = () => {
           <div className="w-20 h-20 bg-zinc-950 rounded-full flex items-center justify-center mx-auto mb-6 border border-zinc-800 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
              <Layers size={32} className="text-zinc-600" />
           </div>
-          <h2 className="text-3xl font-black text-white uppercase italic mb-2">Matrix Empty</h2>
+          <h2 className="text-3xl font-black text-white uppercase italic mb-2">Matriz Vazia</h2>
           <p className="text-zinc-500 font-mono text-xs mb-8 leading-relaxed uppercase tracking-wider">
-            Select gear from the database to run side-by-side technical analysis.
+            Seleciona equipamento da base de dados para realizar análise técnica lado a lado.
           </p>
           <Link 
             to="/explore" 
             className="inline-flex items-center gap-2 bg-white text-padel-black px-8 py-4 rounded-xl font-bold uppercase tracking-wide hover:bg-zinc-200 transition shadow-lg hover:scale-105 transform duration-200"
           >
-            Access Database <ArrowRight size={18} strokeWidth={3} />
+            Aceder à Base de Dados <ArrowRight size={18} strokeWidth={3} />
           </Link>
         </div>
       </div>
@@ -30,22 +30,22 @@ const Compare = () => {
   }
 
   const specs = [
-    { label: 'Brand', key: 'brand', icon: null },
-    { label: 'Year', key: 'year', icon: null },
-    { label: 'Shape Geometry', key: 'shape', icon: Box },
-    { label: 'Balance', key: 'balance', icon: Scale },
-    { label: 'Core Material', key: 'core_type', icon: Layers },
-    { label: 'Surface Material', key: 'surface_type', icon: Layers },
-    { label: 'Weight Range', key: 'weight_text', icon: Ruler },
+    { label: 'Marca', key: 'brand', icon: null },
+    { label: 'Ano', key: 'year', icon: null },
+    { label: 'Formato', key: 'shape', icon: Box },
+    { label: 'Balanço', key: 'balance', icon: Scale },
+    { label: 'Núcleo', key: 'core_type', icon: Layers },
+    { label: 'Superfície', key: 'surface_type', icon: Layers },
+    { label: 'Peso', key: 'weight_text', icon: Ruler },
   ];
 
   const stats = [
-    { label: 'Power Output', path: 'characteristics.power' },
-    { label: 'Control', path: 'characteristics.control' },
-    { label: 'Comfort', path: 'characteristics.comfort' },
-    { label: 'Maneuverability', path: 'characteristics.maneuverability' },
-    { label: 'Sweetspot', path: 'characteristics.sweetspot' },
-    { label: 'Rigidity', path: 'characteristics.rigidity' },
+    { label: 'Potência', path: 'characteristics.power' },
+    { label: 'Controlo', path: 'characteristics.control' },
+    { label: 'Conforto', path: 'characteristics.comfort' },
+    { label: 'Manuseabilidade', path: 'characteristics.maneuverability' },
+    { label: 'Ponto Doce', path: 'characteristics.sweetspot' },
+    { label: 'Rigidez', path: 'characteristics.rigidity' },
   ];
 
   // Fixed 3 slots for comparison to maintain grid structure
@@ -60,21 +60,21 @@ const Compare = () => {
              <div>
                 <div className="flex items-center gap-2 mb-2">
                    <div className="h-px w-8 bg-padel-lime"></div>
-                   <span className="text-xs font-mono text-padel-lime uppercase tracking-widest">Gear Lab</span>
+                   <span className="text-xs font-mono text-padel-lime uppercase tracking-widest">Raquetes</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter">
-                  Technical <span className="text-zinc-700">Comparison</span>
+                  Comparação <span className="text-zinc-700">Técnica</span>
                 </h1>
              </div>
              <div className="flex items-center gap-4">
                 <div className="text-zinc-500 font-mono text-xs hidden sm:block">
-                   // {compareList.length} / 3 SLOTS ACTIVE
+                   // {compareList.length} / 3 SLOTS ATIVOS
                 </div>
                 <button 
                   onClick={clearCompare}
                   className="text-xs font-bold text-red-500 hover:text-red-400 uppercase tracking-wider border border-red-500/30 px-3 py-1 rounded bg-red-500/10 transition-colors"
                 >
-                  Clear Matrix
+                  Limpar Matriz
                 </button>
              </div>
         </div>
@@ -92,8 +92,8 @@ const Compare = () => {
               {/* --- 1. MODEL HEADER ROW --- */}
               <div className="sticky left-0 z-20 p-6 border-b border-r border-zinc-800 bg-zinc-950 flex flex-col justify-end shadow-[4px_0_20px_rgba(0,0,0,0.5)]">
                   <Layers size={24} className="text-zinc-700 mb-2" />
-                  <span className="text-[10px] font-mono text-padel-lime uppercase tracking-widest mb-1">Config Matrix</span>
-                  <div className="text-xl font-black text-white italic uppercase">VS Mode</div>
+                  <span className="text-[10px] font-mono text-padel-lime uppercase tracking-widest mb-1">Matriz de Config</span>
+                  <div className="text-xl font-black text-white italic uppercase">Modo VS</div>
               </div>
 
               {slots.map(i => {
@@ -105,7 +105,7 @@ const Compare = () => {
                         <button 
                           onClick={() => removeFromCompare(r.id)}
                           className="absolute top-3 right-3 p-1.5 bg-zinc-950 text-zinc-600 rounded-lg border border-zinc-800 hover:border-red-500 hover:text-red-500 transition-colors z-20 opacity-0 group-hover:opacity-100"
-                          title="Remove from comparison"
+                          title="Remover da comparação"
                         >
                           <X size={14} />
                         </button>
@@ -128,7 +128,7 @@ const Compare = () => {
                             <Link to={`/racket/${r.id}`} className="block hover:text-padel-lime transition-colors">
                                 <h3 className="font-black text-white text-lg md:text-xl leading-tight uppercase italic mb-1">{r.model}</h3>
                             </Link>
-                            <div className="text-[10px] text-zinc-500 font-mono font-bold">{r.year} SERIES</div>
+                            <div className="text-[10px] text-zinc-500 font-mono font-bold">SÉRIE {r.year}</div>
                         </div>
                       </>
                     ) : (
@@ -136,7 +136,7 @@ const Compare = () => {
                            <div className="w-12 h-12 rounded-full bg-zinc-950 flex items-center justify-center mb-3 border border-zinc-800 group-hover:border-padel-lime transition-colors">
                                <Plus size={20} className="text-zinc-600 group-hover:text-padel-lime" />
                            </div>
-                           <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest group-hover:text-white">Add Model</span>
+                           <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest group-hover:text-white">Adicionar</span>
                       </Link>
                     )}
                   </div>
@@ -174,7 +174,7 @@ const Compare = () => {
               <div className="col-span-full p-3 bg-zinc-950 border-y border-zinc-800 flex items-center justify-center gap-3 sticky left-0 z-30">
                   <div className="h-px w-12 bg-zinc-800"></div>
                   <Zap size={14} className="text-padel-lime animate-pulse" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Performance Metrics</span>
+                  <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Métricas de Performance</span>
                   <div className="h-px w-12 bg-zinc-800"></div>
               </div>
 
@@ -200,7 +200,7 @@ const Compare = () => {
                     return (
                       <div key={`${r.id}-${stat.label}`} className="p-4 border-b border-r border-zinc-800 bg-zinc-900/20 hover:bg-zinc-800/40 transition-colors">
                          <div className="flex items-center justify-between mb-2">
-                           <span className="text-[9px] font-bold text-zinc-600">RATING</span>
+                           <span className="text-[9px] font-bold text-zinc-600">NOTA</span>
                            <span className="text-xs font-bold text-white font-mono">{val}/10</span>
                          </div>
                          <div className="h-2 bg-zinc-950 rounded-sm overflow-hidden border border-zinc-800">
@@ -218,7 +218,7 @@ const Compare = () => {
               {/* --- 5. PRICE ROW --- */}
               <div className="sticky left-0 z-10 p-5 border-r border-zinc-800 bg-zinc-950 flex items-center gap-3 shadow-[4px_0_10px_rgba(0,0,0,0.2)]">
                 <ShoppingCart size={16} className="text-zinc-400" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-widest font-mono">Market Price</span>
+                <span className="text-[10px] font-bold text-white uppercase tracking-widest font-mono">Preço de Mercado</span>
               </div>
               
               {slots.map(i => {

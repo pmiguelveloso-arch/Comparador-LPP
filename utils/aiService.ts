@@ -40,6 +40,7 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
        - "Lob Masters" need a larger sweetspot and possibly lower balance for control.
        - "Counter-attackers" need high reactivity (high maneuverability, medium rigidity).
     4. Provide a "Coach's Analysis" summary (max 40 words) explaining WHY you chose these specs based on their tactical DNA.
+    5. **CRITICAL: The "aiAnalysis" text MUST be in PORTUGUESE (PT-PT).**
 
     Return the result in JSON format matching the schema.
   `;
@@ -59,7 +60,7 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
             maneuverability: { type: Type.NUMBER, description: "Target Maneuverability (1-10)" },
             rigidity: { type: Type.NUMBER, description: "Target Rigidity (1-10)" },
             sweetspot: { type: Type.NUMBER, description: "Target Sweetspot (1-10)" },
-            aiAnalysis: { type: Type.STRING, description: "Coach's analysis summary" }
+            aiAnalysis: { type: Type.STRING, description: "Coach's analysis summary in Portuguese" }
           },
           required: ["power", "control", "comfort", "maneuverability", "rigidity", "sweetspot", "aiAnalysis"]
         }
@@ -77,7 +78,7 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
       maneuverability: aiResult.maneuverability || 5,
       rigidity: aiResult.rigidity || 5,
       sweetspot: aiResult.sweetspot || 5,
-      aiAnalysis: aiResult.aiAnalysis || "AI Analysis unavailable."
+      aiAnalysis: aiResult.aiAnalysis || "Análise IA indisponível."
     };
 
     return completeProfile;
@@ -103,7 +104,7 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
       maneuverability: 5,
       rigidity: hasInjury ? 4 : 6,
       sweetspot: 7,
-      aiAnalysis: "Analysis generated via local offline algorithm (AI Unavailable)."
+      aiAnalysis: "Análise gerada via algoritmo local (IA Indisponível)."
     };
   }
 }
@@ -135,7 +136,7 @@ export async function identifyRacketFromImage(file: File): Promise<any> {
       "year": "String (e.g. 2023, 2024)",
       "shape": "String",
       "confidence": "Number (0-100)",
-      "analysis": "Short visual description of why you identified this racket (max 20 words)"
+      "analysis": "Short visual description of why you identified this racket (max 20 words) in PORTUGUESE (PT-PT)"
     }
   `;
 
@@ -189,6 +190,7 @@ export async function chatWithPadelCoach(
         3. If there is a mismatch (e.g., beginner looking at a pro diamond racket), gently warn them and suggest why it might be difficult.
         4. If you lack info (e.g., injuries or level), ask the user specifically about it to refine your advice.
         5. Use formatting like bullet points for clarity.
+        6. **IMPORTANT: ALWAYS RESPOND IN PORTUGUESE (PT-PT).**
         
         Answer the user's latest message based on this context.
     `;
@@ -207,9 +209,9 @@ export async function chatWithPadelCoach(
             model: modelId,
             contents: contents
         });
-        return response.text || "I'm analyzing the court data... try asking again.";
+        return response.text || "Estou a analisar os dados do campo... tenta perguntar novamente.";
     } catch (error) {
         console.error("Chat Error", error);
-        return "Tactical timeout. My connection to the server is weak. Please try again.";
+        return "Tempo técnico. A minha ligação ao servidor está fraca. Por favor tenta novamente.";
     }
 }

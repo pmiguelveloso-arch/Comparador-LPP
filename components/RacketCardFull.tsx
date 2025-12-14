@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Racket } from '../types';
 import { X, Activity, Box, Scale, Ruler, Layers, Check, ShoppingCart, ExternalLink, Zap } from 'lucide-react';
@@ -85,7 +86,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
             {/* Radar */}
             <div className="bg-zinc-950 rounded-xl border border-zinc-800 p-4 h-[220px]">
                <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                 <Activity size={12} /> Performance Matrix
+                 <Activity size={12} /> Matriz de Performance
                </h4>
                <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="45%" outerRadius="70%" data={chartData}>
@@ -131,16 +132,16 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
 
              {/* Specs Grid */}
              <div className="grid grid-cols-2 gap-3 mb-6">
-                  <SpecItem icon={Box} label="Shape" value={racket.shape} />
-                  <SpecItem icon={Scale} label="Balance" value={racket.balance} />
-                  <SpecItem icon={Ruler} label="Weight" value={`${racket.weight_min}-${racket.weight_max}g`} />
-                  <SpecItem icon={Layers} label="Core" value={racket.core_type} />
+                  <SpecItem icon={Box} label="Formato" value={racket.shape} />
+                  <SpecItem icon={Scale} label="Balanço" value={racket.balance} />
+                  <SpecItem icon={Ruler} label="Peso" value={`${racket.weight_min}-${racket.weight_max}g`} />
+                  <SpecItem icon={Layers} label="Núcleo" value={racket.core_type} />
              </div>
 
              <div className="grid md:grid-cols-2 gap-6 mb-8">
                  {/* Technologies */}
                  <div>
-                    <h5 className="text-xs font-bold text-white uppercase mb-3 border-b border-zinc-800 pb-2">Technologies</h5>
+                    <h5 className="text-xs font-bold text-white uppercase mb-3 border-b border-zinc-800 pb-2">Tecnologias</h5>
                     <div className="space-y-2">
                         {racket.technologies.slice(0, 3).map((tech, i) => (
                            <div key={i} className="flex items-start gap-2">
@@ -156,7 +157,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                  
                  {/* Characteristics List */}
                  <div>
-                    <h5 className="text-xs font-bold text-white uppercase mb-3 border-b border-zinc-800 pb-2">Characteristics</h5>
+                    <h5 className="text-xs font-bold text-white uppercase mb-3 border-b border-zinc-800 pb-2">Características</h5>
                     <div className="space-y-3">
                        {['Power', 'Control', 'Comfort'].map((c, i) => {
                           const val = (racket.characteristics as any)[c.toLowerCase()];
@@ -183,7 +184,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                        <ShoppingCart size={18} />
                     </div>
                     <div>
-                       <div className="text-[10px] text-zinc-500 font-mono uppercase">Est. Price</div>
+                       <div className="text-[10px] text-zinc-500 font-mono uppercase">Preço Est.</div>
                        <div className="text-lg font-bold text-padel-lime font-mono">{racket.price_range}</div>
                     </div>
                  </div>
@@ -198,7 +199,7 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                             : 'border-zinc-700 text-white hover:border-padel-lime hover:text-padel-lime hover:bg-padel-lime/5'
                         }`}
                     >
-                        {isCompared ? 'Added' : 'Add to Compare'}
+                        {isCompared ? 'Adicionado' : 'Comparar'}
                     </button>
                     
                     <a 
@@ -207,14 +208,14 @@ const RacketCardFull: React.FC<RacketCardFullProps> = ({ racket, onClose }) => {
                        rel="noreferrer"
                        className="flex-1 md:flex-none bg-white text-padel-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
                     >
-                        Buy Now <ExternalLink size={14} />
+                        Comprar Agora <ExternalLink size={14} />
                     </a>
                  </div>
              </div>
 
              {/* Store Listing in Modal (Optional enhancement to match RacketDetail) */}
              <div className="mt-4 pt-4 border-t border-zinc-800">
-                <h6 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Available At</h6>
+                <h6 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Disponível Em</h6>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {racket.prices.map((price, idx) => (
                     <a 

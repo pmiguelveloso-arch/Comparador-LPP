@@ -22,12 +22,9 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdowns on click outside
+  // Close dropdowns on click outside (only needed for click interactions, hover handles most)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setBrandsOpen(false);
-      }
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setUserMenuOpen(false);
       }
@@ -45,8 +42,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Dashboard', path: '/' },
-    { name: 'Gear Lab', path: '/explore' },
-    { name: 'Match Engine', path: '/match' },
+    { name: 'Raquetes', path: '/explore' },
+    { name: 'Compatibilidade', path: '/match' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -89,32 +86,42 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {/* Brands Dropdown */}
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setBrandsOpen(!brandsOpen)}
+                {/* Brands Dropdown - Hover to open, Click to visit /brands */}
+                <div 
+                  className="relative h-full flex items-center" 
+                  ref={dropdownRef}
+                  onMouseEnter={() => setBrandsOpen(true)}
+                  onMouseLeave={() => setBrandsOpen(false)}
+                >
+                  <Link
+                    to="/brands"
                     className={`flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                       location.pathname.includes('/brands') || brandsOpen
                         ? 'text-white' 
                         : 'text-zinc-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    Brands
+                    Marcas
                     <ChevronDown size={14} className={`transition-transform duration-200 ${brandsOpen ? 'rotate-180' : ''}`} />
-                  </button>
+                  </Link>
                   
                   {brandsOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl py-2 animate-fade-in-up overflow-hidden">
-                       <div className="px-4 py-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/5 mb-1">Select Manufacturer</div>
-                       {BRANDS.map(brand => (
-                         <Link
-                           key={brand}
-                           to={`/brands/${brand}`}
-                           className="block px-4 py-2 text-sm text-zinc-300 hover:text-padel-lime hover:bg-white/5 transition-colors font-medium"
-                         >
-                           {brand}
-                         </Link>
-                       ))}
+                    <div className="absolute top-full left-0 w-48 pt-2">
+                        <div className="bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl py-2 animate-fade-in-up overflow-hidden">
+                           <div className="px-4 py-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/5 mb-1">Selecionar Marca</div>
+                           {BRANDS.map(brand => (
+                             <Link
+                               key={brand}
+                               to={`/brands/${brand}`}
+                               className="block px-4 py-2 text-sm text-zinc-300 hover:text-padel-lime hover:bg-white/5 transition-colors font-medium"
+                             >
+                               {brand}
+                             </Link>
+                           ))}
+                           <Link to="/brands" className="block px-4 py-2 text-[10px] text-center font-bold text-zinc-500 hover:text-white border-t border-white/5 uppercase mt-1 tracking-wider">
+                              Ver Todas
+                           </Link>
+                        </div>
                     </div>
                   )}
                 </div>
@@ -125,7 +132,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               <Link to="/scanner" className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-padel-lime hover:bg-padel-lime hover:text-padel-black transition-colors group">
                 <ScanLine size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-wider">AI Scan</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">Scanner IA</span>
               </Link>
 
               <Link to="/explore" className="p-2 text-zinc-400 hover:text-white transition-colors">
@@ -140,7 +147,7 @@ const Navbar = () => {
                       className="flex items-center gap-2 pl-4 border-l border-white/10"
                    >
                      <div className="text-right">
-                        <div className="text-[10px] text-zinc-500 font-mono">PLAYER ID</div>
+                        <div className="text-[10px] text-zinc-500 font-mono">ID JOGADOR</div>
                         <div className="text-xs font-bold text-white max-w-[100px] truncate">{user?.name}</div>
                      </div>
                      <UserCircle2 size={32} className="text-zinc-600 hover:text-white transition-colors" />
@@ -149,13 +156,13 @@ const Navbar = () => {
                    {userMenuOpen && (
                       <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl py-2 animate-fade-in-up">
                          <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors">
-                            <UserIcon size={14} /> Profile
+                            <UserIcon size={14} /> Perfil
                          </Link>
                          <button 
                            onClick={logout}
                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
                          >
-                            <LogOut size={14} /> Logout
+                            <LogOut size={14} /> Sair
                          </button>
                       </div>
                    )}
@@ -163,10 +170,10 @@ const Navbar = () => {
               ) : (
                 <div className="hidden md:flex items-center gap-2 pl-4 border-l border-white/10">
                    <Link to="/login" className="text-xs font-bold text-zinc-400 hover:text-white uppercase tracking-wider px-2">
-                     Login
+                     Entrar
                    </Link>
                    <Link to="/register" className="bg-white text-padel-black px-4 py-2 rounded font-bold uppercase text-xs tracking-wider hover:bg-zinc-200 transition-colors">
-                     Register
+                     Registar
                    </Link>
                 </div>
               )}
@@ -203,6 +210,18 @@ const Navbar = () => {
               ))}
 
               <Link
+                to="/brands"
+                className={`flex items-center justify-between px-6 py-4 rounded-xl text-lg font-bold uppercase tracking-wide border ${
+                  isActive('/brands')
+                    ? 'bg-padel-lime text-padel-black border-padel-lime'
+                    : 'bg-zinc-900 border-white/5 text-zinc-400'
+                }`}
+              >
+                Marcas
+                <ChevronDown size={20} />
+              </Link>
+
+              <Link
                 to="/scanner"
                 className={`flex items-center justify-between px-6 py-4 rounded-xl text-lg font-bold uppercase tracking-wide border ${
                   isActive('/scanner')
@@ -210,12 +229,12 @@ const Navbar = () => {
                     : 'bg-zinc-900 border-white/5 text-zinc-400'
                 }`}
               >
-                AI Scanner
+                Scanner IA
                 <ScanLine size={20} />
               </Link>
 
               <div className="pt-6 border-t border-white/10">
-                 <div className="px-2 text-xs font-mono text-zinc-500 uppercase tracking-widest mb-4">Manufacturer Index</div>
+                 <div className="px-2 text-xs font-mono text-zinc-500 uppercase tracking-widest mb-4">Índice de Fabricantes</div>
                  <div className="grid grid-cols-2 gap-3">
                    {BRANDS.map(brand => (
                       <Link 
@@ -236,20 +255,20 @@ const Navbar = () => {
                       <UserCircle2 className="text-zinc-400" />
                       <div>
                           <div className="text-white font-bold">{user?.name}</div>
-                          <div className="text-zinc-500 text-xs font-mono">View Profile</div>
+                          <div className="text-zinc-500 text-xs font-mono">Ver Perfil</div>
                       </div>
                     </Link>
                     <button onClick={logout} className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-bold uppercase">
-                       <LogOut size={16} /> Logout
+                       <LogOut size={16} /> Sair
                     </button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-4">
                      <Link to="/login" className="flex items-center justify-center py-4 rounded-xl border border-zinc-700 text-white font-bold uppercase">
-                        Login
+                        Entrar
                      </Link>
                      <Link to="/register" className="flex items-center justify-center py-4 rounded-xl bg-white text-padel-black font-bold uppercase">
-                        Register
+                        Registar
                      </Link>
                   </div>
                 )}

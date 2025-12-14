@@ -6,8 +6,9 @@ import { authService } from '../utils/authService';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
-  register: (name: string, email: string, pass: string) => Promise<void>;
+  login: (email: string, pass: string) => Promise<User>; // Updated return type for logic checks
+  loginWithProvider: (provider: 'google' | 'facebook') => Promise<User>;
+  register: (name: string, email: string, pass: string) => Promise<User>; // Updated return type
   logout: () => void;
   updateUserProfile: (profile: PlayerProfile) => void;
   isAuthenticated: boolean;
@@ -15,7 +16,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,15 +32,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const user = await authService.login(email, pass);
       setUser(user);
+      return user;
     } catch (error) {
       throw error;
     }
+  };
+
+  const loginWithProvider = async (provider: 'google' | 'facebook') => {
+      try {
+          const user = await authService.loginWithProvider(provider);
+          setUser(user);
+          return user;
+      } catch (error) {
+          throw error;
+      }
   };
 
   const register = async (name: string, email: string, pass: string) => {
     try {
       const user = await authService.register(name, email, pass);
       setUser(user);
+      return user;
     } catch (error) {
       throw error;
     }
@@ -63,6 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user, 
       loading, 
       login, 
+      loginWithProvider,
       register, 
       logout, 
       updateUserProfile,

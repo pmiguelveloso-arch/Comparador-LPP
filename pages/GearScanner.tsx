@@ -59,13 +59,13 @@ const GearScanner = () => {
         
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-zinc-900 border border-zinc-800 text-padel-lime text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
-             <ScanLine size={14} /> AI Vision Engine
+             <ScanLine size={14} /> Motor de Visão IA
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter mb-4">
-            Gear <span className="text-zinc-600">Scanner</span>
+            Scanner de <span className="text-zinc-600">Equipamento</span>
           </h1>
           <p className="text-zinc-400 font-mono text-xs max-w-md mx-auto leading-relaxed">
-            Upload a photo of any padel racket. Our Neural Engine will identify the model, analyze its geometry, and check our database for specs.
+            Carrega uma foto de qualquer raquete de padel. O nosso Motor Neural irá identificar o modelo, analisar a geometria e verificar especificações na nossa base de dados.
           </p>
         </div>
 
@@ -85,8 +85,8 @@ const GearScanner = () => {
               <div className="w-20 h-20 bg-zinc-950 rounded-full flex items-center justify-center mb-6 shadow-xl group">
                 <Camera size={32} className="text-zinc-500 group-hover:text-padel-lime transition-colors" />
               </div>
-              <h3 className="text-xl font-bold text-white uppercase italic mb-2">Upload Racket Photo</h3>
-              <p className="text-zinc-500 text-xs font-mono">JPG, PNG supported</p>
+              <h3 className="text-xl font-bold text-white uppercase italic mb-2">Carregar Foto da Raquete</h3>
+              <p className="text-zinc-500 text-xs font-mono">JPG, PNG suportados</p>
             </div>
           ) : (
             <div className="flex-grow flex flex-col md:flex-row h-full">
@@ -104,7 +104,7 @@ const GearScanner = () => {
                  {isScanning && (
                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20">
                       <ScanLine size={48} className="text-padel-lime animate-pulse mb-4" />
-                      <div className="text-padel-lime font-mono text-xs uppercase tracking-widest animate-pulse">Analyzing Geometry...</div>
+                      <div className="text-padel-lime font-mono text-xs uppercase tracking-widest animate-pulse">A Analisar Geometria...</div>
                    </div>
                  )}
               </div>
@@ -113,33 +113,33 @@ const GearScanner = () => {
               <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col border-l border-zinc-800">
                 {isScanning ? (
                    <div className="flex-grow flex items-center justify-center text-zinc-600 font-mono text-xs">
-                     <Loader2 size={24} className="animate-spin mr-2" /> Processing...
+                     <Loader2 size={24} className="animate-spin mr-2" /> A Processar...
                    </div>
                 ) : scanResult ? (
                    <div className="animate-fade-in-up">
                       <div className="flex items-center gap-2 mb-6">
                          <div className={`w-3 h-3 rounded-full ${scanResult.confidence > 80 ? 'bg-green-500' : 'bg-amber-500'}`}></div>
                          <span className="text-xs font-bold text-white uppercase tracking-wide">
-                            Identification {scanResult.confidence > 80 ? 'Confident' : 'Uncertain'} ({scanResult.confidence}%)
+                            Identificação {scanResult.confidence > 80 ? 'Fiável' : 'Incerta'} ({scanResult.confidence}%)
                          </span>
                       </div>
 
                       <div className="space-y-6">
                           <div>
-                             <div className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Detected Brand</div>
+                             <div className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Marca Detetada</div>
                              <div className="text-2xl font-black text-white uppercase italic">{scanResult.brand}</div>
                           </div>
                           <div>
-                             <div className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Detected Model</div>
+                             <div className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Modelo Detetado</div>
                              <div className="text-xl font-bold text-padel-lime uppercase">{scanResult.model}</div>
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                              <div className="bg-zinc-950 p-3 rounded border border-zinc-800">
-                                <div className="text-[9px] text-zinc-500 font-mono uppercase">Est. Year</div>
+                                <div className="text-[9px] text-zinc-500 font-mono uppercase">Ano Est.</div>
                                 <div className="text-white font-bold">{scanResult.year}</div>
                              </div>
                              <div className="bg-zinc-950 p-3 rounded border border-zinc-800">
-                                <div className="text-[9px] text-zinc-500 font-mono uppercase">Shape</div>
+                                <div className="text-[9px] text-zinc-500 font-mono uppercase">Formato</div>
                                 <div className="text-white font-bold">{scanResult.shape}</div>
                              </div>
                           </div>
@@ -151,7 +151,7 @@ const GearScanner = () => {
                           {matchedRacket ? (
                              <div className="mt-4 pt-4 border-t border-zinc-800">
                                 <div className="text-[10px] text-padel-lime font-mono uppercase mb-2 flex items-center gap-2">
-                                   <Zap size={12} /> Database Match Found
+                                   <Zap size={12} /> Correspondência na BD Encontrada
                                 </div>
                                 <div className="h-[200px]">
                                   <RacketCard racket={matchedRacket} showMatchScore={false} />
@@ -159,9 +159,9 @@ const GearScanner = () => {
                              </div>
                           ) : (
                              <div className="mt-4 pt-4 border-t border-zinc-800 text-center">
-                                <div className="text-zinc-500 text-xs italic mb-2">Exact model not found in local DB.</div>
+                                <div className="text-zinc-500 text-xs italic mb-2">Modelo exato não encontrado na BD local.</div>
                                 <Link to="/explore" className="text-padel-lime text-xs font-bold uppercase hover:underline flex items-center justify-center gap-1">
-                                   Search Manually <ArrowRight size={12} />
+                                   Pesquisar Manualmente <ArrowRight size={12} />
                                 </Link>
                              </div>
                           )}
@@ -169,7 +169,7 @@ const GearScanner = () => {
                    </div>
                 ) : (
                    <div className="flex-grow flex items-center justify-center text-zinc-600 font-mono text-xs text-center opacity-50">
-                      Upload an image to extract technical specifications.
+                      Carrega uma imagem para extrair especificações técnicas.
                    </div>
                 )}
               </div>

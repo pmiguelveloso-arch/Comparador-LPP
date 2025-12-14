@@ -70,15 +70,15 @@ const MatchResults = () => {
       <div className="min-h-screen pt-20 flex flex-col items-center justify-center p-4 text-center bg-padel-black bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
         <div className="bg-zinc-900/80 p-12 rounded-2xl border border-zinc-800 backdrop-blur-sm max-w-lg w-full">
           <Activity size={64} className="text-zinc-700 mx-auto mb-6" />
-          <h2 className="text-3xl font-black text-white uppercase italic mb-2">No Profile Data</h2>
+          <h2 className="text-3xl font-black text-white uppercase italic mb-2">Sem Perfil</h2>
           <p className="text-zinc-500 font-mono text-sm mb-8 leading-relaxed">
-            The Match Engine requires biometric and playstyle data to calculate compatibility scores.
+            O Motor de Correspondência requer dados biométricos e de estilo de jogo para calcular pontuações de compatibilidade.
           </p>
           <Link 
             to="/quiz" 
             className="inline-flex items-center gap-2 bg-padel-lime text-padel-black px-8 py-4 rounded font-bold uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_20px_rgba(163,230,53,0.3)]"
           >
-            Launch Assessment <ArrowRight size={18} strokeWidth={3} />
+            Iniciar Avaliação <ArrowRight size={18} strokeWidth={3} />
           </Link>
         </div>
       </div>
@@ -94,20 +94,20 @@ const MatchResults = () => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-padel-lime/10 blur-[100px] rounded-full -z-10"></div>
           
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-zinc-900 border border-zinc-800 text-padel-lime text-[10px] font-mono font-bold uppercase tracking-widest mb-6">
-            <Zap size={12} fill="currentColor" /> Match Algorithm v2.0
+            <Zap size={12} fill="currentColor" /> Algoritmo Match v2.0
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter mb-4 leading-none max-w-full break-words">
-            Optimal <span className="text-transparent bg-clip-text bg-gradient-to-r from-padel-lime to-green-600">Gear Match</span>
+            Correspondência <span className="text-transparent bg-clip-text bg-gradient-to-r from-padel-lime to-green-600">Ideal</span>
           </h1>
           
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-mono text-zinc-400 mt-4">
              <span className="bg-zinc-900 px-3 py-1 rounded border border-zinc-800">
-                STYLE: <span className="text-white uppercase font-bold">{profile.style}</span>
+                ESTILO: <span className="text-white uppercase font-bold">{profile.style}</span>
              </span>
              <span className="hidden md:inline text-zinc-600">|</span>
              <span className="bg-zinc-900 px-3 py-1 rounded border border-zinc-800">
-                LEVEL: <span className="text-white uppercase font-bold">{profile.experience}</span>
+                NÍVEL: <span className="text-white uppercase font-bold">{profile.experience}</span>
              </span>
           </div>
         </div>
@@ -127,7 +127,7 @@ const MatchResults = () => {
                  </div>
                  {index === 0 && (
                     <div className="bg-padel-lime text-padel-black px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest flex items-center gap-1 shadow-[0_0_15px_rgba(163,230,53,0.3)]">
-                        <Trophy size={12} /> Best Fit
+                        <Trophy size={12} /> Melhor Escolha
                     </div>
                  )}
               </div>
@@ -191,8 +191,8 @@ const MatchResults = () => {
                  <BarChart2 size={24} />
               </div>
               <div className="text-left">
-                 <div className="text-white font-bold uppercase text-sm tracking-wide group-hover:text-padel-lime transition-colors">Browse Full Database</div>
-                 <div className="text-zinc-500 text-[10px] font-mono">COMPARE OTHER MODELS MANUALLY</div>
+                 <div className="text-white font-bold uppercase text-sm tracking-wide group-hover:text-padel-lime transition-colors">Ver Base de Dados Completa</div>
+                 <div className="text-zinc-500 text-[10px] font-mono">COMPARAR OUTROS MODELOS MANUALMENTE</div>
               </div>
               <ArrowRight className="text-zinc-600 group-hover:text-white transition-colors" />
            </Link>

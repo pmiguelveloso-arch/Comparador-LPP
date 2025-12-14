@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Link } from 'react-router-dom';
@@ -18,8 +19,8 @@ const CompareBar = () => {
                 <Layers size={18} />
              </div>
              <div className="hidden sm:block">
-                <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mb-1">Matrix</div>
-                <span className="font-bold text-xs uppercase tracking-wide text-white">Active</span>
+                <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mb-1">Matriz</div>
+                <span className="font-bold text-xs uppercase tracking-wide text-white">Ativa</span>
              </div>
           </div>
           
@@ -49,17 +50,17 @@ const CompareBar = () => {
            <button 
              onClick={clearCompare} 
              className="hidden sm:flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 hover:text-red-400 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
-             title="Clear Selection"
+             title="Limpar Seleção"
            >
-             <Trash2 size={12} /> Clear
+             <Trash2 size={12} /> Limpar
            </button>
            
            <Link 
              to="/compare" 
              className="flex items-center gap-2 bg-padel-lime text-padel-black hover:bg-lime-300 px-4 sm:px-6 py-3 rounded-xl font-black uppercase text-xs tracking-wide transition-all shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:shadow-[0_0_25px_rgba(163,230,53,0.4)] hover:scale-105 active:scale-95"
            >
-             <span className="hidden sm:inline">Compare</span>
-             <span className="sm:hidden">Run</span>
+             <span className="hidden sm:inline">Comparar</span>
+             <span className="sm:hidden">Ir</span>
              <ArrowRight size={14} strokeWidth={3} />
            </Link>
         </div>
