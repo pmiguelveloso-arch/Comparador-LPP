@@ -1,43 +1,26 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Activity, UserCircle2, Search, ChevronDown, ScanLine, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, X, Activity, Search, ChevronDown, ScanLine } from 'lucide-react';
 import { BRANDS } from '../data/rackets';
-import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [brandsOpen, setBrandsOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
   
-  const { user, isAuthenticated, logout } = useAuth();
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdowns on click outside (only needed for click interactions, hover handles most)
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
     setBrandsOpen(false);
-    setUserMenuOpen(false);
   }, [location]);
 
   const navLinks = [
@@ -139,45 +122,6 @@ const Navbar = () => {
                 <Search size={20} />
               </Link>
 
-              {/* User Menu / Login */}
-              {isAuthenticated ? (
-                <div className="relative hidden md:block" ref={userMenuRef}>
-                   <button 
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-2 pl-4 border-l border-white/10"
-                   >
-                     <div className="text-right">
-                        <div className="text-[10px] text-zinc-500 font-mono">ID JOGADOR</div>
-                        <div className="text-xs font-bold text-white max-w-[100px] truncate">{user?.name}</div>
-                     </div>
-                     <UserCircle2 size={32} className="text-zinc-600 hover:text-white transition-colors" />
-                   </button>
-
-                   {userMenuOpen && (
-                      <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl py-2 animate-fade-in-up">
-                         <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors">
-                            <UserIcon size={14} /> Perfil
-                         </Link>
-                         <button 
-                           onClick={logout}
-                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
-                         >
-                            <LogOut size={14} /> Sair
-                         </button>
-                      </div>
-                   )}
-                </div>
-              ) : (
-                <div className="hidden md:flex items-center gap-2 pl-4 border-l border-white/10">
-                   <Link to="/login" className="text-xs font-bold text-zinc-400 hover:text-white uppercase tracking-wider px-2">
-                     Entrar
-                   </Link>
-                   <Link to="/register" className="bg-white text-padel-black px-4 py-2 rounded font-bold uppercase text-xs tracking-wider hover:bg-zinc-200 transition-colors">
-                     Registar
-                   </Link>
-                </div>
-              )}
-              
               <div className="flex md:hidden">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
@@ -246,32 +190,6 @@ const Navbar = () => {
                       </Link>
                    ))}
                  </div>
-              </div>
-              
-              <div className="pt-6">
-                {isAuthenticated ? (
-                  <div className="space-y-3">
-                    <Link to="/profile" className="flex items-center gap-3 px-6 py-4 rounded-xl bg-zinc-900 border border-white/5">
-                      <UserCircle2 className="text-zinc-400" />
-                      <div>
-                          <div className="text-white font-bold">{user?.name}</div>
-                          <div className="text-zinc-500 text-xs font-mono">Ver Perfil</div>
-                      </div>
-                    </Link>
-                    <button onClick={logout} className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-bold uppercase">
-                       <LogOut size={16} /> Sair
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4">
-                     <Link to="/login" className="flex items-center justify-center py-4 rounded-xl border border-zinc-700 text-white font-bold uppercase">
-                        Entrar
-                     </Link>
-                     <Link to="/register" className="flex items-center justify-center py-4 rounded-xl bg-white text-padel-black font-bold uppercase">
-                        Registar
-                     </Link>
-                  </div>
-                )}
               </div>
 
             </div>

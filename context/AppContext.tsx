@@ -71,20 +71,8 @@ export const AppProvider = ({ children }: { children?: ReactNode }) => {
   };
 
   const getUserReviews = () => {
-    // Guard against server execution
-    if (typeof window === 'undefined') return [];
-
-    const sessionUserStr = localStorage.getItem('loucos_session_user');
-    if (sessionUserStr) {
-      try {
-        const user = JSON.parse(sessionUserStr);
-        return reviews.filter(r => r.userId === user.id);
-      } catch (e) {
-        console.error("Error parsing session user", e);
-        return [];
-      }
-    }
-    return [];
+    // Return all reviews stored in local browser since we don't have login
+    return reviews; 
   };
 
   return (

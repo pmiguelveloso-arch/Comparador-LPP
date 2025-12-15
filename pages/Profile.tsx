@@ -2,14 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { PlayerProfile } from '../types';
 import { Link } from 'react-router-dom';
-import { User, Activity, Edit2, Zap, Shield, Target, Wallet, HeartPulse, Scale, Gauge, Wind, AlertTriangle, Cpu, ArrowRight, MessageSquare, ExternalLink, Save } from 'lucide-react';
+import { User, Activity, Edit2, Zap, Shield, Target, Wallet, HeartPulse, Scale, Gauge, Wind, AlertTriangle, Cpu, ArrowRight, MessageSquare, ExternalLink } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { useAuth } from '../context/AuthContext';
 import { RACKETS } from '../data/rackets';
 
 const Profile = () => {
   const { getUserReviews } = useApp();
-  const { isAuthenticated, user } = useAuth();
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -63,24 +61,6 @@ const Profile = () => {
     <div className="min-h-screen pt-24 pb-12 px-4 bg-padel-black bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
       <div className="max-w-5xl mx-auto">
         
-        {/* Guest Warning / CTA */}
-        {!isAuthenticated && (
-            <div className="bg-gradient-to-r from-violet-500/10 to-transparent border border-violet-500/20 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-violet-500/20 rounded-xl text-violet-400">
-                        <Save size={24} />
-                    </div>
-                    <div>
-                        <h3 className="text-white font-bold uppercase italic">Modo Convidado Ativo</h3>
-                        <p className="text-zinc-400 text-xs font-mono max-w-md">Os teus dados de perfil estão guardados temporariamente no navegador. Cria uma conta para guardar os teus dados permanentemente e aceder de qualquer dispositivo.</p>
-                    </div>
-                </div>
-                <Link to="/register" className="bg-white text-padel-black px-6 py-3 rounded-lg font-bold uppercase text-xs tracking-wide hover:bg-zinc-200 transition whitespace-nowrap">
-                    Guardar Perfil
-                </Link>
-            </div>
-        )}
-
         {/* Header / Identity Card */}
         <div className="bg-zinc-900 rounded-2xl p-6 md:p-8 border border-zinc-800 mb-8 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-padel-lime/5 to-transparent skew-x-[-20deg] translate-x-20 pointer-events-none"></div>
@@ -92,7 +72,7 @@ const Profile = () => {
                             <User size={40} className="text-zinc-500" />
                         </div>
                         <div className="absolute -bottom-2 -right-2 bg-padel-lime text-padel-black text-[10px] font-black px-2 py-1 rounded border border-padel-black">
-                            {isAuthenticated ? 'PRO' : 'GUEST'}
+                            PRO
                         </div>
                     </div>
                     
@@ -105,7 +85,7 @@ const Profile = () => {
                             {profile.style === 'consistente' && <Shield size={12} className="text-blue-400" />}
                         </div>
                         <h1 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter mb-1">
-                            {isAuthenticated ? user?.name : (profile.name || 'Atleta Convidado')}
+                            {profile.name || 'Atleta'}
                         </h1>
                         <div className="flex items-center gap-2 justify-center md:justify-start text-xs font-mono">
                             <span className="text-white font-bold">{profile.experience} CLASSE</span>
@@ -121,7 +101,7 @@ const Profile = () => {
                 </Link>
             </div>
 
-            {/* Moved Biometrics Section */}
+            {/* Biometrics Section */}
             <div className="mt-8 pt-6 border-t border-zinc-800 relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                     <Scale size={14} className="text-zinc-500" />
@@ -169,7 +149,7 @@ const Profile = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
             
-            {/* Left Column: Stats (4 cols) - Biometrics removed */}
+            {/* Left Column: Stats (4 cols) */}
             <div className="md:col-span-4 space-y-6">
                 
                 {/* Attribute Preferences */}
@@ -235,7 +215,7 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* Medical Alert Card (Conditional) - Moved inside Context card for cleaner layout if needed, or keep separate */}
+                    {/* Medical Alert Card (Conditional) */}
                     {profile.injuries && profile.injuries.some(i => i !== 'None') && (
                         <div className="mt-6 bg-red-500/5 rounded-xl p-4 border border-red-500/20">
                              <h3 className="text-xs font-black text-red-400 uppercase italic mb-3 flex items-center gap-2">

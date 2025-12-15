@@ -6,14 +6,12 @@ import { ArrowLeft, Check, ShoppingCart, ExternalLink, Zap, Activity, Info, Scal
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { getRacketMatch } from '../utils/matchLogic';
 import { useApp } from '../context/AppContext';
-import { useAuth } from '../context/AuthContext';
 import { Review, RacketCharacteristics } from '../types';
 import ReviewList from '../components/ReviewList';
 
 const RacketDetail = () => {
   const { id } = useParams();
   const { addToCompare, isInCompare, reviews, addReview } = useApp();
-  const { user, isAuthenticated } = useAuth();
   const racket = RACKETS.find(r => r.id === id);
 
   // Detailed Review State
@@ -27,6 +25,7 @@ const RacketDetail = () => {
   });
   
   const [comment, setComment] = useState('');
+  const [reviewerName, setReviewerName] = useState('');
   const [playtime, setPlaytime] = useState('1 Month');
   const [overallRating, setOverallRating] = useState(5);
 
@@ -60,13 +59,16 @@ const RacketDetail = () => {
 
   const handleSubmitReview = (e: React.FormEvent) => {
       e.preventDefault();
-      if (!isAuthenticated || !user) return;
+      if (!reviewerName.trim()) {
+          alert("Por favor indica o teu nome.");
+          return;
+      }
 
       const newReview: Review = {
           id: Date.now().toString(),
           racketId: racket.id,
-          userId: user.id,
-          userName: user.name,
+          userId: 'guest-' + Date.now(), // Unique guest ID
+          userName: reviewerName,
           date: new Date().toISOString(),
           rating: overallRating,
           characteristics: { ...specs },
@@ -78,6 +80,7 @@ const RacketDetail = () => {
       
       // Reset Form
       setComment('');
+      setReviewerName('');
       setSpecs({
         power: 5, control: 5, comfort: 5, maneuverability: 5, sweetspot: 5, rigidity: 5
       });
@@ -391,76 +394,77 @@ const RacketDetail = () => {
                           <MessageSquare size={16} className="text-padel-lime" /> Submeter Análise
                        </h4>
                        
-                       {!isAuthenticated ? (
-                           <div className="text-center py-6">
-                               <p className="text-zinc-500 text-xs mb-4">Inicia sessão para partilhar a tua análise técnica.</p>
-                               <Link to="/login" className="block w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold uppercase text-xs rounded transition-colors">
-                                   Entrar para Avaliar
-                               </Link>
-                           </div>
-                       ) : (
-                           <form onSubmit={handleSubmitReview} className="space-y-5">
+                       <form onSubmit={handleSubmitReview} className="space-y-5">
+                            <div>
+                                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Nome do Jogador</label>
+                                <input 
+                                    type="text" 
+                                    value={reviewerName}
+                                    onChange={(e) => setReviewerName(e.target.value)}
+                                    placeholder="O teu nome ou alcunha"
+                                    className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-sm p-3 rounded focus:border-padel-lime outline-none font-bold"
+                                />
+                            </div>
+
+                           <div className="space-y-3">
+                               <div className="flex justify-between items-center mb-1">
+                                   <span className="text-[10px] font-bold text-white uppercase tracking-wider">Avaliação Geral</span>
+                                   <span className="text-lg font-black text-padel-lime">{overallRating}/10</span>
+                               </div>
                                
-                               <div className="space-y-3">
-                                   <div className="flex justify-between items-center mb-1">
-                                       <span className="text-[10px] font-bold text-white uppercase tracking-wider">Avaliação Geral</span>
-                                       <span className="text-lg font-black text-padel-lime">{overallRating}/10</span>
-                                   </div>
-                                   
-                                   {/* Characteristic Sliders */}
-                                   {(['power', 'control', 'comfort', 'maneuverability', 'sweetspot', 'rigidity'] as Array<keyof RacketCharacteristics>).map((stat) => (
-                                     <div key={stat}>
-                                        <div className="flex justify-between mb-1">
-                                            <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">{stat === 'rigidity' ? 'Dureza' : stat}</label>
-                                            <span className="text-[9px] font-mono text-white">{specs[stat]}</span>
-                                        </div>
-                                        <input 
-                                            type="range" 
-                                            min="1" 
-                                            max="10" 
-                                            step="0.5"
-                                            value={specs[stat]}
-                                            onChange={(e) => updateSpec(stat, parseFloat(e.target.value))}
-                                            className="w-full h-1.5 bg-zinc-950 rounded-lg appearance-none cursor-pointer accent-padel-lime hover:accent-lime-300"
-                                        />
-                                     </div>
-                                   ))}
-                               </div>
+                               {/* Characteristic Sliders */}
+                               {(['power', 'control', 'comfort', 'maneuverability', 'sweetspot', 'rigidity'] as Array<keyof RacketCharacteristics>).map((stat) => (
+                                 <div key={stat}>
+                                    <div className="flex justify-between mb-1">
+                                        <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">{stat === 'rigidity' ? 'Dureza' : stat}</label>
+                                        <span className="text-[9px] font-mono text-white">{specs[stat]}</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="1" 
+                                        max="10" 
+                                        step="0.5"
+                                        value={specs[stat]}
+                                        onChange={(e) => updateSpec(stat, parseFloat(e.target.value))}
+                                        className="w-full h-1.5 bg-zinc-950 rounded-lg appearance-none cursor-pointer accent-padel-lime hover:accent-lime-300"
+                                    />
+                                 </div>
+                               ))}
+                           </div>
 
-                               <div>
-                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Tempo de Utilização</label>
-                                   <select 
-                                     value={playtime}
-                                     onChange={(e) => setPlaytime(e.target.value)}
-                                     className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs p-3 rounded focus:border-padel-lime outline-none font-mono"
-                                   >
-                                       <option>Demo / Teste</option>
-                                       <option>1 Mês</option>
-                                       <option>3 Meses</option>
-                                       <option>6 Meses+</option>
-                                       <option>1 Ano+</option>
-                                   </select>
-                               </div>
-
-                               <div>
-                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Comentários Detalhados</label>
-                                   <textarea 
-                                     rows={4}
-                                     value={comment}
-                                     onChange={(e) => setComment(e.target.value)}
-                                     placeholder="Descreve as sensações, saída de bola e toque..."
-                                     className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-sm p-3 rounded focus:border-padel-lime outline-none resize-none"
-                                   />
-                               </div>
-
-                               <button 
-                                 type="submit"
-                                 className="w-full py-3 bg-white hover:bg-zinc-200 text-padel-black font-black uppercase text-xs rounded transition-colors flex items-center justify-center gap-2"
+                           <div>
+                               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Tempo de Utilização</label>
+                               <select 
+                                 value={playtime}
+                                 onChange={(e) => setPlaytime(e.target.value)}
+                                 className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs p-3 rounded focus:border-padel-lime outline-none font-mono"
                                >
-                                   Enviar Relatório <Send size={14} />
-                               </button>
-                           </form>
-                       )}
+                                   <option>Demo / Teste</option>
+                                   <option>1 Mês</option>
+                                   <option>3 Meses</option>
+                                   <option>6 Meses+</option>
+                                   <option>1 Ano+</option>
+                               </select>
+                           </div>
+
+                           <div>
+                               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Comentários Detalhados</label>
+                               <textarea 
+                                 rows={4}
+                                 value={comment}
+                                 onChange={(e) => setComment(e.target.value)}
+                                 placeholder="Descreve as sensações, saída de bola e toque..."
+                                 className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-sm p-3 rounded focus:border-padel-lime outline-none resize-none"
+                               />
+                           </div>
+
+                           <button 
+                             type="submit"
+                             className="w-full py-3 bg-white hover:bg-zinc-200 text-padel-black font-black uppercase text-xs rounded transition-colors flex items-center justify-center gap-2"
+                           >
+                               Enviar Relatório <Send size={14} />
+                           </button>
+                       </form>
                    </div>
                 </div>
 

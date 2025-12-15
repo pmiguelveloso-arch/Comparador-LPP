@@ -10,44 +10,35 @@ import Quiz from './pages/Quiz';
 import MatchResults from './pages/MatchResults';
 import RacketDetail from './pages/RacketDetail';
 import Compare from './pages/Compare';
-import Profile from './pages/Profile';
 import BrandLanding from './pages/BrandLanding';
 import AllBrands from './pages/AllBrands';
 import GearScanner from './pages/GearScanner';
-import Login from './pages/Login';
-import Register from './pages/Register';
 import { AppProvider } from './context/AppContext';
-import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <AuthProvider>
-      <AppProvider>
-        <Router>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/explore" element={<Explore />} />
-                <Route path="/brands" element={<AllBrands />} />
-                <Route path="/brands/:brandName" element={<BrandLanding />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/match" element={<MatchResults />} />
-                <Route path="/racket/:id" element={<RacketDetail />} />
-                <Route path="/compare" element={<Compare />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/scanner" element={<GearScanner />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Routes>
-            </main>
-            <CompareBar />
-            <Footer />
-          </div>
-        </Router>
-      </AppProvider>
-    </AuthProvider>
+    <AppProvider>
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/explore" element={<Explore />} />
+              <Route path="/brands" element={<AllBrands />} />
+              <Route path="/brands/:brandName" element={<BrandLanding />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/match" element={<MatchResults />} />
+              <Route path="/racket/:id" element={<RacketDetail />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/scanner" element={<GearScanner />} />
+            </Routes>
+          </main>
+          <CompareBar />
+          <Footer />
+        </div>
+      </Router>
+    </AppProvider>
   );
 }
 
