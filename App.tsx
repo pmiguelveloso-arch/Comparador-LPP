@@ -4,6 +4,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CompareBar from './components/CompareBar';
+import AIAssistant from './components/AIAssistant';
 import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Quiz from './pages/Quiz';
@@ -34,6 +35,7 @@ function App() {
               <Route path="/scanner" element={<GearScanner />} />
             </Routes>
           </main>
+          <AIAssistant />
           <CompareBar />
           <Footer />
         </div>

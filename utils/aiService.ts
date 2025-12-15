@@ -9,10 +9,18 @@ let aiClient: GoogleGenAI | null = null;
 const getAiClient = (): GoogleGenAI => {
   if (aiClient) return aiClient;
 
-  // content of process.env.API_KEY is injected at build time
-  const apiKey = process.env.API_KEY;
+  // Safe access to environment variable to prevent ReferenceError in browsers
+  // In a build environment (Vite/Webpack), process.env.API_KEY is replaced by a string literal.
+  // In a raw environment, we safeguard against 'process' being undefined.
+  let apiKey: string | undefined;
+  try {
+    apiKey = process.env.API_KEY;
+  } catch (e) {
+    console.warn("Environment variable access failed. Using offline mode.");
+  }
   
   if (!apiKey) {
+    // We throw specific error to be caught by feature handlers
     throw new Error("MISSING_API_KEY");
   }
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { chatWithPadelCoach } from '../utils/aiService';
@@ -253,3 +252,23 @@ const AIAssistant = () => {
                                 />
                                 <button 
                                     onClick={handleSend}
+                                    className="absolute right-2 p-1.5 bg-padel-lime text-padel-black rounded-lg hover:bg-lime-400 transition-colors"
+                                >
+                                    <Send size={16} />
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center py-2 text-red-500 text-xs font-bold uppercase flex items-center justify-center gap-2">
+                            <BatteryWarning size={16} /> Daily Limit Reached
+                        </div>
+                    )}
+                </div>
+            </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AIAssistant;

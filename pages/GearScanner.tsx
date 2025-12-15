@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera, Upload, ScanLine, X, Search, Zap, Loader2, ArrowRight } from 'lucide-react';
+import { Camera, Upload, ScanLine, X, Search, Zap, Loader2, ArrowRight, AlertTriangle } from 'lucide-react';
 import { identifyRacketFromImage } from '../utils/aiService';
 import { RACKETS } from '../data/rackets';
 import RacketCard from '../components/RacketCard';
@@ -12,6 +12,7 @@ const GearScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
   const [matchedRacket, setMatchedRacket] = useState<Racket | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,12 +22,14 @@ const GearScanner = () => {
       setSelectedImage(imageUrl);
       setScanResult(null);
       setMatchedRacket(null);
+      setError(null);
       await performScan(file);
     }
   };
 
   const performScan = async (file: File) => {
     setIsScanning(true);
+    setError(null);
     try {
       const result = await identifyRacketFromImage(file);
       setScanResult(result);
@@ -39,8 +42,9 @@ const GearScanner = () => {
         );
         setMatchedRacket(found || null);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Scan error", error);
+      setError("Falha na análise de visão. Verifique a sua ligação ou Chave API.");
     } finally {
       setIsScanning(false);
     }
@@ -50,6 +54,7 @@ const GearScanner = () => {
     setSelectedImage(null);
     setScanResult(null);
     setMatchedRacket(null);
+    setError(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -114,6 +119,13 @@ const GearScanner = () => {
                 {isScanning ? (
                    <div className="flex-grow flex items-center justify-center text-zinc-600 font-mono text-xs">
                      <Loader2 size={24} className="animate-spin mr-2" /> A Processar...
+                   </div>
+                ) : error ? (
+                   <div className="flex-grow flex flex-col items-center justify-center text-center">
+                      <AlertTriangle size={32} className="text-red-500 mb-4" />
+                      <h3 className="text-white font-bold uppercase mb-2">Erro de Análise</h3>
+                      <p className="text-zinc-500 text-xs mb-6">{error}</p>
+                      <button onClick={resetScanner} className="px-4 py-2 bg-zinc-800 rounded text-xs text-white uppercase font-bold hover:bg-zinc-700">Tentar Novamente</button>
                    </div>
                 ) : scanResult ? (
                    <div className="animate-fade-in-up">
