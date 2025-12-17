@@ -5,21 +5,38 @@ import { PlayerProfile, Racket } from "../types";
 // Lazy initialization holder
 let aiClient: GoogleGenAI | null = null;
 
+// Helper to safely get the API Key across different environments (Vite, Next, Webpack)
+const getApiKey = (): string | undefined => {
+  // 1. Try Vite (Vercel default for static React)
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
+      // @ts-ignore
+      if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+    }
+  } catch (e) {}
+
+  // 2. Try Node/Webpack (Standard process.env)
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      if (process.env.API_KEY) return process.env.API_KEY;
+      if (process.env.REACT_APP_API_KEY) return process.env.REACT_APP_API_KEY;
+    }
+  } catch (e) {}
+
+  return undefined;
+};
+
 // Helper to safely get the client instance
 const getAiClient = (): GoogleGenAI => {
   if (aiClient) return aiClient;
 
-  // Safe access to environment variable to prevent ReferenceError in browsers
-  // In a build environment (Vite/Webpack), process.env.API_KEY is replaced by a string literal.
-  // In a raw environment, we safeguard against 'process' being undefined.
-  let apiKey: string | undefined;
-  try {
-    apiKey = process.env.API_KEY;
-  } catch (e) {
-    console.warn("Environment variable access failed. Using offline mode.");
-  }
+  const apiKey = getApiKey();
   
   if (!apiKey) {
+    console.warn("API Key not found in environment variables (VITE_API_KEY or API_KEY). AI features will be disabled.");
     // We throw specific error to be caught by feature handlers
     throw new Error("MISSING_API_KEY");
   }

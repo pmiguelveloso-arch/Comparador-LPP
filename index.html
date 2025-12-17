@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-PT" class="dark">
   <head>
@@ -80,5 +81,15 @@
 </head>
   <body class="bg-padel-black text-zinc-100 antialiased selection:bg-padel-lime selection:text-padel-black">
     <div id="root"></div>
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error('Global Error:', message, error);
+        // Only show if root is empty (app crashed on mount)
+        if (!document.getElementById('root').innerHTML) {
+          document.body.innerHTML = '<div style="color:white; padding:20px; font-family:monospace; text-align:center;">' +
+            '<h1>App Error</h1><p>' + message + '</p><p>Check console for details. Verify API Keys in Vercel Settings.</p></div>';
+        }
+      };
+    </script>
   </body>
 </html>
