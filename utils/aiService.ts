@@ -7,26 +7,27 @@ let aiClient: GoogleGenAI | null = null;
 
 // Helper to safely get the API Key across different environments (Vite, Next, Webpack)
 const getApiKey = (): string | undefined => {
+  let key: string | undefined = undefined;
+
   // 1. Try Vite (Vercel default for static React)
   try {
     // @ts-ignore
     if (typeof import.meta !== 'undefined' && import.meta.env) {
       // @ts-ignore
-      if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
-      // @ts-ignore
-      if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+      key = import.meta.env.VITE_API_KEY || import.meta.env.API_KEY;
     }
-  } catch (e) {}
+  } catch (e) { /* ignore */ }
+
+  if (key) return key;
 
   // 2. Try Node/Webpack (Standard process.env)
   try {
     if (typeof process !== 'undefined' && process.env) {
-      if (process.env.API_KEY) return process.env.API_KEY;
-      if (process.env.REACT_APP_API_KEY) return process.env.REACT_APP_API_KEY;
+      key = process.env.API_KEY || process.env.REACT_APP_API_KEY;
     }
-  } catch (e) {}
+  } catch (e) { /* ignore */ }
 
-  return undefined;
+  return key;
 };
 
 // Helper to safely get the client instance
@@ -36,8 +37,7 @@ const getAiClient = (): GoogleGenAI => {
   const apiKey = getApiKey();
   
   if (!apiKey) {
-    console.warn("API Key not found in environment variables (VITE_API_KEY or API_KEY). AI features will be disabled.");
-    // We throw specific error to be caught by feature handlers
+    console.error("CRITICAL: API Key not found. Please set VITE_API_KEY in Vercel Environment Variables.");
     throw new Error("MISSING_API_KEY");
   }
 
