@@ -1,14 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlayerProfile } from '../types';
 import { analyzeProfileWithAI } from '../utils/aiService';
-import { ArrowRight, ArrowLeft, Activity, Loader2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { ArrowRight, ArrowLeft, Activity, Loader2, AlertCircle, BrainCircuit, Weight, Zap } from 'lucide-react';
 
 const Quiz = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, updateUserProfile } = useAuth();
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisStatus, setAnalysisStatus] = useState('A processar dados biométricos...');
   const totalSteps = 6;
   
   const [formData, setFormData] = useState<Partial<PlayerProfile>>({
@@ -27,10 +30,30 @@ const Quiz = () => {
     net_style: undefined,
     baseline_style: undefined,
     game_pace: undefined,
-    age: undefined
+    age: undefined,
+    weight_preference: 365 
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (isAnalyzing) {
+      const statuses = [
+        'A analisar o teu DNA tático...',
+        'A calcular vetores de potência e controlo...',
+        'A cruzar dados com modelos de 2025...',
+        'A otimizar para prevenção de lesões...',
+        'A gerar relatório de scouting personalizado...',
+        'A finalizar veredito do treinador...'
+      ];
+      let i = 0;
+      const interval = setInterval(() => {
+        setAnalysisStatus(statuses[i % statuses.length]);
+        i++;
+      }, 1800);
+      return () => clearInterval(interval);
+    }
+  }, [isAnalyzing]);
 
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -57,10 +80,11 @@ const Quiz = () => {
         if (!formData.smash_frequency) newErrors.smash_frequency = "Gostas de smashar?";
         if (!formData.net_style) newErrors.net_style = "Como és na rede?";
         if (!formData.baseline_style) newErrors.baseline_style = "Como és no fundo?";
-        if (!formData.game_pace) newErrors.game_pace = "Qual o ritmo do jogo?";
+        if (!formData.game_pace) newErrors.game_pace = "Qual o teu ritmo de jogo?";
     }
     if (currentStep === 6) { 
          if (!formData.touch_preference) newErrors.touch_preference = "Que toque preferes?";
+         if (!formData.weight_preference) newErrors.weight_preference = "Escolhe o peso.";
          if (!formData.budget) newErrors.budget = "Qual o teu orçamento?";
     }
 
@@ -72,10 +96,15 @@ const Quiz = () => {
     if (validateStep(step)) {
         if (step < totalSteps) {
             setStep(step + 1);
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             finishQuiz();
         }
+    } else {
+        // Encontrar o primeiro erro e dar scroll até lá se necessário
+        // Fixed: Access the errors state variable instead of undefined newErrors
+        const firstErrorKey = Object.keys(errors)[0];
+        console.warn("Validação falhou no campo:", firstErrorKey);
     }
   };
 
@@ -83,12 +112,12 @@ const Quiz = () => {
     if (step > 1) {
         setStep(step - 1);
         setErrors({});
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const updateProfile = (key: keyof PlayerProfile, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
-    // Limpar erro do campo quando preenchido
     if (errors[key]) {
         const newErrors = { ...errors };
         delete newErrors[key];
@@ -113,12 +142,18 @@ const Quiz = () => {
 
   const finishQuiz = async () => {
     setIsAnalyzing(true);
+    // Guardar dados base imediatamente por precaução
+    localStorage.setItem('player_profile', JSON.stringify(formData));
+    
     try {
         const finalProfile = await analyzeProfileWithAI(formData);
         localStorage.setItem('player_profile', JSON.stringify(finalProfile));
+        if (isAuthenticated && updateUserProfile) {
+            updateUserProfile(finalProfile);
+        }
         navigate('/match');
     } catch (error) {
-        console.error("Erro na análise IA", error);
+        console.error("Erro na análise IA, a usar dados base:", error);
         navigate('/match');
     } finally {
         setIsAnalyzing(false);
@@ -126,22 +161,34 @@ const Quiz = () => {
   };
 
   const ErrorMsg = ({ field }: { field: string }) => errors[field] ? (
-    <div className="flex items-center gap-1 mt-1 text-red-500 text-[10px] font-bold uppercase animate-pulse">
+    <div className="flex items-center gap-1 mt-2 text-red-500 text-[10px] font-bold uppercase animate-pulse">
         <AlertCircle size={12} /> {errors[field]}
     </div>
   ) : null;
 
   if (isAnalyzing) {
     return (
-        <div className="min-h-screen bg-padel-black flex flex-col items-center justify-center p-4">
-            <div className="text-center">
-                <Loader2 size={48} className="text-padel-lime animate-spin mx-auto mb-6" />
-                <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">
-                    A preparar as tuas <span className="text-padel-lime">Recomendações</span>
+        <div className="min-h-screen bg-padel-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-padel-lime/5 blur-[100px] rounded-full animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="text-center relative z-10 max-w-sm">
+                <div className="relative mb-8 flex justify-center">
+                    <div className="absolute inset-0 bg-padel-lime/20 blur-xl rounded-full animate-ping scale-75"></div>
+                    <div className="relative w-24 h-24 bg-zinc-900 rounded-3xl border border-padel-lime/30 flex items-center justify-center text-padel-lime shadow-[0_0_40px_rgba(163,230,53,0.2)]">
+                        <BrainCircuit size={48} className="animate-pulse" />
+                    </div>
+                </div>
+                <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none mb-4">
+                    Motor de <span className="text-padel-lime">Visão Tática</span> Ativo
                 </h2>
-                <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest mt-4">
-                    Estamos a cruzar o teu perfil com a nossa base de dados...
-                </p>
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 rounded-full border border-white/5 shadow-xl">
+                        <Loader2 size={14} className="text-padel-lime animate-spin" />
+                        <p className="text-zinc-400 font-mono text-[10px] uppercase tracking-[0.2em] min-w-[200px]">
+                            {analysisStatus}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -177,9 +224,8 @@ const Quiz = () => {
               <div className="flex-grow space-y-8 animate-fade-in-up">
                 <div>
                     <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Fala-nos de ti</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">QUEREMOS CONHECER O TEU PERFIL FÍSICO</p>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Queremos conhecer o teu perfil físico</p>
                 </div>
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Género</label>
@@ -200,7 +246,6 @@ const Quiz = () => {
                         </div>
                         <ErrorMsg field="gender" />
                     </div>
-
                     <div>
                          <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Idade</label>
                          <input 
@@ -213,7 +258,6 @@ const Quiz = () => {
                         <ErrorMsg field="age" />
                     </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                          <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Altura (cm)</label>
@@ -245,9 +289,8 @@ const Quiz = () => {
               <div className="flex-grow space-y-8 animate-fade-in-up">
                  <div>
                     <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Sentes alguma dor?</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">PARA TE RECOMENDARMOS UMA RAQUETE CONFORTÁVEL</p>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Para te recomendarmos uma raquete confortável</p>
                 </div>
-                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                         { id: 'None', label: 'Estou impecável' },
@@ -276,9 +319,8 @@ const Quiz = () => {
               <div className="flex-grow space-y-6 animate-fade-in-up">
                 <div>
                     <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">O teu percurso</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">NÍVEL E FREQUÊNCIA DE JOGO</p>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Nível e frequência de jogo</p>
                 </div>
-                
                 <div className="space-y-6">
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Qual o teu nível?</label>
@@ -295,7 +337,6 @@ const Quiz = () => {
                         </select>
                         <ErrorMsg field="experience" />
                     </div>
-
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Quantas vezes jogas por semana?</label>
                         <div className="grid grid-cols-3 gap-3">
@@ -315,7 +356,6 @@ const Quiz = () => {
                         </div>
                         <ErrorMsg field="frequency" />
                     </div>
-
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Onde costumas jogar?</label>
                         <div className="grid grid-cols-3 gap-3">
@@ -343,9 +383,8 @@ const Quiz = () => {
               <div className="flex-grow space-y-8 animate-fade-in-up">
                  <div>
                     <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">O teu jogo</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">POSIÇÃO E ESTILO</p>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Posição e estilo</p>
                 </div>
-                
                 <div className="space-y-6">
                     <div>
                       <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider">Lado do Campo</label>
@@ -370,7 +409,6 @@ const Quiz = () => {
                       </div>
                       <ErrorMsg field="position" />
                     </div>
-
                     <div>
                       <label className="block text-xs font-bold text-padel-lime mb-3 uppercase tracking-wider">Estilo de Jogo</label>
                       <div className="flex gap-2">
@@ -402,9 +440,8 @@ const Quiz = () => {
               <div className="flex-grow space-y-8 animate-fade-in-up overflow-y-auto max-h-[500px] pr-2 no-scrollbar">
                  <div>
                     <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Como bates na bola?</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">DETALHES TÁCTICOS</p>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Detalhes tácticos</p>
                 </div>
-                
                 <div className="space-y-6">
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-2 block">Smash (Remate)?</label>
@@ -424,6 +461,30 @@ const Quiz = () => {
                             ))}
                         </div>
                         <ErrorMsg field="smash_frequency" />
+                    </div>
+                    
+                    <div>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-2 block">Ritmo de Jogo?</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { val: 'slow', label: 'Lento' },
+                                { val: 'variable', label: 'Variável' },
+                                { val: 'fast', label: 'Rápido' }
+                            ].map(opt => (
+                                <button
+                                    key={opt.val}
+                                    onClick={() => updateProfile('game_pace', opt.val)}
+                                    className={`p-3 rounded border text-[10px] font-bold uppercase transition-all ${
+                                        formData.game_pace === opt.val 
+                                         ? 'bg-padel-lime text-padel-black border-padel-lime'
+                                         : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800'
+                                    }`}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                        <ErrorMsg field="game_pace" />
                     </div>
 
                     <div>
@@ -448,12 +509,11 @@ const Quiz = () => {
                         </div>
                         <ErrorMsg field="net_style" />
                     </div>
-
                     <div>
                         <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-2 block">No fundo do campo?</label>
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { id: 'lob', label: 'Lançar balões' },
+                                { id: 'lob', label: 'Balões' },
                                 { id: 'counter', label: 'Contra-ataque' },
                                 { id: 'power', label: 'Bater forte' }
                             ].map(opt => (
@@ -472,53 +532,60 @@ const Quiz = () => {
                         </div>
                         <ErrorMsg field="baseline_style" />
                     </div>
-
-                    <div>
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-2 block">Ritmo de jogo?</label>
-                        <div className="grid grid-cols-3 gap-3">
-                            {['fast', 'slow', 'variable'].map(opt => (
-                                <button
-                                    key={opt}
-                                    onClick={() => updateProfile('game_pace', opt)}
-                                    className={`p-3 rounded border text-[10px] font-bold uppercase transition-all ${
-                                        formData.game_pace === opt 
-                                         ? 'bg-padel-lime text-padel-black border-padel-lime'
-                                         : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800'
-                                    }`}
-                                >
-                                    {opt === 'fast' ? 'Rápido' : opt === 'slow' ? 'Lento' : 'Misto'}
-                                </button>
-                            ))}
-                        </div>
-                        <ErrorMsg field="game_pace" />
-                    </div>
                 </div>
               </div>
             )}
 
             {step === 6 && (
-               <div className="flex-grow space-y-8 animate-fade-in-up">
+               <div className="flex-grow space-y-8 animate-fade-in-up overflow-y-auto max-h-[500px] pr-2 no-scrollbar">
                  <div>
-                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Últimas preferências</h2>
-                    <p className="text-zinc-500 font-mono text-xs mt-1">TOQUE E ORÇAMENTO</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic">Preferências Técnicas</h2>
+                    <p className="text-zinc-500 font-mono text-xs mt-1 uppercase">Configuração do equipamento</p>
                 </div>
-
-                <div className="space-y-6">
+                <div className="space-y-8">
                     <div>
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Como gostas do toque da raquete?</label>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-4 flex items-center gap-2">
+                           <Weight size={14} /> Preferência de Peso (Maneabilidade)
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {[
+                                { val: 350, label: 'Leve', desc: '< 360g', sub: 'Rapidez' },
+                                { val: 365, label: 'Médio', desc: '360-370g', sub: 'Equilibrado' },
+                                { val: 375, label: 'Pesado', desc: '> 370g', sub: 'Potência' }
+                            ].map(opt => (
+                                <button
+                                    key={opt.val}
+                                    onClick={() => updateProfile('weight_preference', opt.val)}
+                                    className={`text-left p-4 rounded-xl border transition-all ${
+                                        formData.weight_preference === opt.val 
+                                         ? 'bg-padel-lime/10 border-padel-lime text-white'
+                                         : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                                    }`}
+                                >
+                                    <div className="font-black uppercase text-xs mb-1">{opt.label}</div>
+                                    <div className="text-[10px] font-mono opacity-60 mb-1">{opt.desc}</div>
+                                    <div className="text-[9px] font-bold text-zinc-600 uppercase italic">{opt.sub}</div>
+                                </button>
+                            ))}
+                        </div>
+                        <ErrorMsg field="weight_preference" />
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Toque da Raquete (Sensação)</label>
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { id: 'soft', label: 'Macio', sub: 'Mais saída' },
-                                { id: 'medium', label: 'Médio', sub: 'Híbrido' },
-                                { id: 'hard', label: 'Duro', sub: 'Mais força' }
+                                { id: 'soft', label: 'Macio', sub: 'Saída' },
+                                { id: 'medium', label: 'Médio', sub: 'Polivalente' },
+                                { id: 'hard', label: 'Duro', sub: 'Controlo' }
                             ].map(opt => (
                                 <button
                                     key={opt.id}
                                     onClick={() => updateProfile('touch_preference', opt.id)}
-                                    className={`text-left p-3 rounded border transition-all ${
+                                    className={`text-left p-3 rounded-xl border transition-all ${
                                         formData.touch_preference === opt.id 
                                          ? 'bg-white text-padel-black border-white'
-                                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
                                     }`}
                                 >
                                     <div className="font-bold uppercase text-xs">{opt.label}</div>
@@ -530,21 +597,21 @@ const Quiz = () => {
                     </div>
 
                     <div>
-                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Orçamento?</label>
+                        <label className="text-xs font-bold text-padel-lime uppercase tracking-wider mb-3 block">Orçamento Máximo</label>
                         <div className="grid grid-cols-2 gap-3">
                             {[
                                 { id: 'economy', label: 'Económico', sub: 'Até 160€' },
                                 { id: 'performance', label: 'Performance', sub: 'Até 260€' },
                                 { id: 'premium', label: 'Premium', sub: 'Top Gama' },
-                                { id: 'unlimited', label: 'Qualquer Preço' }
+                                { id: 'unlimited', label: 'Livre', sub: 'Sem Limite' }
                             ].map(opt => (
                                 <button
                                     key={opt.id}
                                     onClick={() => updateProfile('budget', opt.id)}
-                                    className={`text-left p-3 rounded border transition-all ${
+                                    className={`text-left p-3 rounded-xl border transition-all ${
                                         formData.budget === opt.id 
                                          ? 'bg-padel-lime/10 border-padel-lime text-white'
-                                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-900'
+                                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-700'
                                     }`}
                                 >
                                     <div className="font-bold uppercase text-xs">{opt.label}</div>
@@ -566,16 +633,16 @@ const Quiz = () => {
               >
                 <ArrowLeft size={14} /> Voltar
               </button>
-              
               <button 
                 onClick={handleNext}
                 className="bg-white hover:bg-zinc-200 text-padel-black px-8 py-3 rounded font-black uppercase tracking-wide text-xs flex items-center gap-2 transition-transform active:scale-95 shadow-lg"
               >
-                {step === totalSteps ? 'Finalizar' : 'Continuar'}
-                <ArrowRight size={14} />
+                {step === totalSteps ? (
+                  <span className="flex items-center gap-2">Gerar Relatório <Zap size={14} fill="currentColor" /></span>
+                ) : 'Continuar'}
+                {step !== totalSteps && <ArrowRight size={14} />}
               </button>
             </div>
-
           </div>
         </div>
       </div>

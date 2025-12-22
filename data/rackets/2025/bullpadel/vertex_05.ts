@@ -1,3 +1,4 @@
+
 import { Racket } from '../../../../types';
 
 export const vertex05_2025: Racket = {
@@ -29,6 +30,7 @@ export const vertex05_2025: Racket = {
     { "label": "Curvaktiv", "note": "Nova estrutura torcional." },
     { "label": "Air React Channel", "note": "Aerodinâmica melhorada." }
   ],
+  youtubeIds: ["u8HOn_L_qU4", "q3S_IeH7qms"],
   prices: [
     {
       store: "PadelNuestro",

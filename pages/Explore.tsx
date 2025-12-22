@@ -4,7 +4,7 @@ import { RACKETS, BRANDS } from '../data/rackets';
 import { Racket } from '../types';
 import RacketCard from '../components/RacketCard';
 import RacketCardFull from '../components/RacketCardFull';
-import { Search, Filter, SlidersHorizontal, Scale, Box, Zap, Weight, ChevronDown, X, ChevronUp } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, Scale, Box, Zap, Weight, ChevronDown, X, ChevronUp, Calendar } from 'lucide-react';
 import { getRacketMatch } from '../utils/matchLogic';
 
 const Explore = () => {
@@ -15,9 +15,10 @@ const Explore = () => {
   const [selectedBalance, setSelectedBalance] = useState('Todas');
   const [selectedWeight, setSelectedWeight] = useState('Todas');
   const [selectedRigidity, setSelectedRigidity] = useState('Todas');
+  const [selectedYear, setSelectedYear] = useState('Todas');
   
   const [selectedRacket, setSelectedRacket] = useState<Racket | null>(null);
-  const [showFilters, setShowFilters] = useState(false); // Agora começa oculto
+  const [showFilters, setShowFilters] = useState(false); 
   
   const filteredRackets = useMemo(() => {
     return RACKETS.filter(r => {
@@ -26,6 +27,7 @@ const Explore = () => {
       const matchesBrand = selectedBrand === 'Todas' || r.brand === selectedBrand;
       const matchesShape = selectedShape === 'Todas' || r.shape === selectedShape;
       const matchesBalance = selectedBalance === 'Todas' || r.balance === selectedBalance;
+      const matchesYear = selectedYear === 'Todas' || r.year === selectedYear;
       
       // Weight Filter
       let matchesWeight = true;
@@ -59,14 +61,14 @@ const Explore = () => {
         else if (selectedPriceRange === 'premium') matchesPrice = avgPrice > 260;
       }
       
-      return matchesSearch && matchesBrand && matchesShape && matchesPrice && matchesBalance && matchesWeight && matchesRigidity;
+      return matchesSearch && matchesBrand && matchesShape && matchesPrice && matchesBalance && matchesWeight && matchesRigidity && matchesYear;
     }).sort((a, b) => {
         const scoreA = getRacketMatch(a);
         const scoreB = getRacketMatch(b);
         if (scoreA !== scoreB) return scoreB - scoreA;
         return a.model.localeCompare(b.model);
     });
-  }, [searchTerm, selectedBrand, selectedShape, selectedPriceRange, selectedBalance, selectedWeight, selectedRigidity]);
+  }, [searchTerm, selectedBrand, selectedShape, selectedPriceRange, selectedBalance, selectedWeight, selectedRigidity, selectedYear]);
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -76,9 +78,10 @@ const Explore = () => {
     setSelectedBalance('Todas');
     setSelectedWeight('Todas');
     setSelectedRigidity('Todas');
+    setSelectedYear('Todas');
   };
 
-  const hasActiveFilters = selectedBrand !== 'Todas' || selectedShape !== 'Todas' || selectedPriceRange !== 'Todas' || selectedBalance !== 'Todas' || selectedWeight !== 'Todas' || selectedRigidity !== 'Todas';
+  const hasActiveFilters = selectedBrand !== 'Todas' || selectedShape !== 'Todas' || selectedPriceRange !== 'Todas' || selectedBalance !== 'Todas' || selectedWeight !== 'Todas' || selectedRigidity !== 'Todas' || selectedYear !== 'Todas';
 
   const FilterSelect = ({ label, icon: Icon, value, onChange, options }: any) => (
     <div className="flex flex-col gap-1.5">
@@ -158,13 +161,27 @@ const Explore = () => {
         {/* Advanced Filter Panel - Conditionally rendered with animation */}
         {showFilters && (
           <div className="bg-zinc-900/40 backdrop-blur-xl p-6 rounded-2xl border border-zinc-800 mb-8 shadow-2xl animate-fade-in-up">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
               <FilterSelect 
                 label="Marca" 
                 icon={Box} 
                 value={selectedBrand} 
                 onChange={setSelectedBrand}
                 options={[{ val: 'Todas', label: 'Todas as Marcas' }, ...BRANDS.map(b => ({ val: b, label: b }))]}
+              />
+
+              <FilterSelect 
+                label="Coleção" 
+                icon={Calendar} 
+                value={selectedYear} 
+                onChange={setSelectedYear}
+                options={[
+                  { val: 'Todas', label: 'Todos os Anos' },
+                  { val: '2026', label: '2026 (New)' },
+                  { val: '2025', label: '2025' },
+                  { val: '2024', label: '2024' },
+                  { val: '2023', label: '2023' }
+                ]}
               />
               
               <FilterSelect 

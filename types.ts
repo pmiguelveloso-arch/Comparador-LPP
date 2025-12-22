@@ -38,11 +38,13 @@ export interface Racket {
   review_summary: string;
   technologies: Technology[];
   prices: Price[];
-  isTrending?: boolean; // Editor's Choice Flag
+  isTrending?: boolean; 
   
-  // New Fields
-  targetPlayer?: string; // e.g. "Avançado / Profissional"
-  gameStyle?: string;    // e.g. "Ataque Agressivo", "Controlo Total"
+  // YouTube Integration
+  youtubeIds?: string[];
+  
+  targetPlayer?: string; 
+  gameStyle?: string;    
 }
 
 export interface Review {
@@ -51,17 +53,17 @@ export interface Review {
   userId: string;
   userName: string;
   date: string;
-  rating: number; // Overall Average (Calculated)
-  characteristics: RacketCharacteristics; // Detailed Scores
+  rating: number; 
+  characteristics: RacketCharacteristics; 
   comment: string;
-  playtime: string; // e.g. "1 Month", "6 Months"
+  playtime: string; 
 }
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string; // Only for auth check, usually hashed in real DB
+  password?: string; 
   avatar?: string;
   savedProfile?: PlayerProfile;
   createdAt: string;
@@ -69,36 +71,22 @@ export interface User {
 
 export interface PlayerProfile {
   name?: string;
-  
-  // Biometrics
   age: number;
   gender: 'M' | 'F' | 'Outro';
-  height?: number; // cm
-  weight?: number; // kg
-  
-  // Medical
+  height?: number; 
+  weight?: number; 
   injuries: string[]; 
-
-  // Context
   frequency: string;
   experience: string;
   court_type?: 'indoor' | 'outdoor' | 'mixed';
   budget: 'economy' | 'performance' | 'premium' | 'unlimited';
-
-  // Playstyle & Tactics
   position: 'direita' | 'esquerda';
   style: 'ofensivo' | 'equilibrado' | 'consistente';
-  smash_frequency?: 'low' | 'medium' | 'high'; // Defines overhead aggression
-  
-  // Advanced Tactics (New)
+  smash_frequency?: 'low' | 'medium' | 'high'; 
   net_style?: 'aggressive' | 'control' | 'blocking';
   baseline_style?: 'lob' | 'counter' | 'power';
   game_pace?: 'fast' | 'slow' | 'variable';
-
-  // Preference
-  touch_preference?: 'soft' | 'medium' | 'hard'; // Rubber feel preference
-
-  // Calculated Specs Target (Internal use for algorithm)
+  touch_preference?: 'soft' | 'medium' | 'hard'; 
   power: number;
   control: number;
   comfort: number;
@@ -106,7 +94,5 @@ export interface PlayerProfile {
   rigidity: number;
   sweetspot: number;
   weight_preference?: number; 
-  
-  // New field for AI text
   aiAnalysis?: string;
 }

@@ -1,9 +1,23 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { PlayerProfile, Racket } from "../types";
+import { AI_CONFIG } from "../config/aiConfig";
 
-// Helper to convert file to Base64 for vision-based model inputs
-const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: string; mimeType: string } }> => {
+/**
+ * Função utilitária para limpar e converter a resposta da IA para JSON
+ */
+const parseAIJsonResponse = (text: string) => {
+  try {
+    // Remove possíveis blocos de código markdown (```json ... ```)
+    const cleaned = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    return JSON.parse(cleaned);
+  } catch (e) {
+    console.error("Erro ao processar JSON da IA:", e);
+    return null;
+  }
+};
+
+const fileToGenerativePart = async (file: File) => {
   const base64EncodedDataPromise = new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
@@ -15,146 +29,82 @@ const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: s
 };
 
 export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Promise<PlayerProfile> {
-  // Initializing GenAI client with process.env.API_KEY as the exclusive source
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  // Using gemini-3-pro-preview for complex reasoning and tactical analysis
-  const modelId = "gemini-3-pro-preview";
-
   const prompt = `
-    You are an expert Padel Equipment Coach and Biomechanics Analyst.
-    Analyze the following player data and determine the OPTIMAL target racket specifications for them.
+    Analisa este perfil de jogador de Padel:
+    ${JSON.stringify(formData, null, 2)}
     
-    Player Data:
-    - Age: ${formData.age}
-    - Gender: ${formData.gender}
-    - Height: ${formData.height}cm
-    - Weight: ${formData.weight}kg
-    - Injuries: ${formData.injuries?.join(", ")}
-    - Level: ${formData.experience}
-    - Play Frequency: ${formData.frequency}
-    - Court Position: ${formData.position}
-    - Playstyle Archetype: ${formData.style}
-    - Smash Frequency: ${formData.smash_frequency}
-    - Court Type: ${formData.court_type}
-    - Touch Preference: ${formData.touch_preference}
-    
-    New Tactical Data:
-    - Net Style: ${formData.net_style} (e.g. Aggressive puncher vs Blocker)
-    - Baseline Style: ${formData.baseline_style} (e.g. Lob Master vs Counter-attacker)
-    - Game Pace: ${formData.game_pace}
-
-    Rules for Analysis:
-    1. Safety First: If they have elbow/shoulder injuries, you MUST lower the target Rigidity (<5) and maximize Comfort (>8).
-    2. Physics: Heavier/stronger players can handle heavier/stiffer rackets. Lighter players need maneuverability.
-    3. Tactical Correlations:
-       - "Aggressive Net" players need high Maneuverability and medium-high balance.
-       - "Lob Masters" need a larger sweetspot and possibly lower balance for control.
-       - "Counter-attackers" need high reactivity (high maneuverability, medium rigidity).
-    4. Provide a "Coach's Analysis" summary (max 40 words) explaining WHY you chose these specs based on their tactical DNA.
-    5. **CRITICAL: The "aiAnalysis" text MUST be in PORTUGUESE (PT-PT).**
-
-    Return the result in JSON format matching the schema.
+    Gera um veredito técnico (aiAnalysis) em PT-PT e define os scores (1-10) para:
+    power, control, comfort, maneuverability, rigidity, sweetspot.
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model: modelId,
+      model: AI_CONFIG.models.complex,
       contents: prompt,
       config: {
+        ...AI_CONFIG.generationConfig,
+        systemInstruction: AI_CONFIG.systemInstructions.profiler,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            power: { type: Type.NUMBER, description: "Target Power (1-10)" },
-            control: { type: Type.NUMBER, description: "Target Control (1-10)" },
-            comfort: { type: Type.NUMBER, description: "Target Comfort (1-10)" },
-            maneuverability: { type: Type.NUMBER, description: "Target Maneuverability (1-10)" },
-            rigidity: { type: Type.NUMBER, description: "Target Rigidity (1-10)" },
-            sweetspot: { type: Type.NUMBER, description: "Target Sweetspot (1-10)" },
-            aiAnalysis: { type: Type.STRING, description: "Coach's analysis summary in Portuguese" }
+            power: { type: Type.NUMBER },
+            control: { type: Type.NUMBER },
+            comfort: { type: Type.NUMBER },
+            maneuverability: { type: Type.NUMBER },
+            rigidity: { type: Type.NUMBER },
+            sweetspot: { type: Type.NUMBER },
+            aiAnalysis: { type: Type.STRING }
           },
           required: ["power", "control", "comfort", "maneuverability", "rigidity", "sweetspot", "aiAnalysis"]
         }
       }
     });
 
-    const aiResult = JSON.parse(response.text || "{}");
+    const aiResult = parseAIJsonResponse(response.text || "{}");
 
-    const completeProfile: PlayerProfile = {
-      ...(formData as PlayerProfile),
-      power: aiResult.power || 5,
-      control: aiResult.control || 5,
-      comfort: aiResult.comfort || 5,
-      maneuverability: aiResult.maneuverability || 5,
-      rigidity: aiResult.rigidity || 5,
-      sweetspot: aiResult.sweetspot || 5,
-      aiAnalysis: aiResult.aiAnalysis || "Análise IA indisponível."
-    };
-
-    return completeProfile;
-
-  } catch (error: any) {
-    console.warn("AI Analysis unavailable or failed. Using fallback logic.", error.message);
-    
-    let basePower = 5;
-    let baseControl = 5;
-    
-    if (formData.style === 'ofensivo') { basePower = 8; baseControl = 5; }
-    else if (formData.style === 'consistente') { basePower = 4; baseControl = 9; }
-    
-    const hasInjury = formData.injuries?.some(i => i !== 'None');
-    
     return {
       ...(formData as PlayerProfile),
-      power: hasInjury ? Math.min(basePower, 6) : basePower,
-      control: baseControl,
-      comfort: hasInjury ? 9 : 5,
-      maneuverability: 5,
-      rigidity: hasInjury ? 4 : 6,
-      sweetspot: 7,
-      aiAnalysis: "Análise gerada via algoritmo local (IA Indisponível)."
+      power: aiResult?.power || 5,
+      control: aiResult?.control || 5,
+      comfort: aiResult?.comfort || 5,
+      maneuverability: aiResult?.maneuverability || 5,
+      rigidity: aiResult?.rigidity || 5,
+      sweetspot: aiResult?.sweetspot || 5,
+      aiAnalysis: aiResult?.aiAnalysis || "A tua análise está pronta baseada nos teus dados biométricos."
+    };
+
+  } catch (error) {
+    console.error("AI Profiler Error:", error);
+    return {
+      ...(formData as PlayerProfile),
+      power: 5, control: 5, comfort: 5, maneuverability: 5, rigidity: 5, sweetspot: 7,
+      aiAnalysis: "O motor de IA está em manutenção, mas os teus dados foram processados localmente para os matches."
     };
   }
 }
 
 export async function identifyRacketFromImage(file: File): Promise<any> {
-  // Initializing GenAI client with process.env.API_KEY
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  // Using gemini-2.5-flash-image for high-performance visual recognition
-  const modelId = "gemini-2.5-flash-image"; 
 
   const prompt = `
-    Analyze this image of a Padel Racket.
-    Identify the Brand, Model, and approximate Year.
-    Also, estimate its Shape (Diamante, Lagrima, Redonda) based on the visual geometry.
-    
-    Return ONLY a JSON object with these fields:
-    {
-      "brand": "String (e.g. Bullpadel, Nox, Adidas)",
-      "model": "String (e.g. Vertex 03, AT10, Metalbone)",
-      "year": "String (e.g. 2023, 2024)",
-      "shape": "String",
-      "confidence": "Number (0-100)",
-      "analysis": "Short visual description of why you identified this racket (max 20 words) in PORTUGUESE (PT-PT)"
-    }
+    Identifica esta raquete de Padel. Responde em JSON com os campos: 
+    "brand" (marca), "model" (modelo), "year" (ano), "analysis" (breve descrição em PT-PT) e "confidence" (0-100).
   `;
 
   try {
     const imagePart = await fileToGenerativePart(file);
-    
     const response = await ai.models.generateContent({
-      model: modelId,
+      model: AI_CONFIG.models.vision,
       contents: { parts: [imagePart, { text: prompt }] },
-      config: {
-        responseMimeType: "application/json"
-      }
+      config: { responseMimeType: "application/json" }
     });
-
-    return JSON.parse(response.text || "{}");
+    return parseAIJsonResponse(response.text || "{}");
   } catch (error) {
-    console.error("AI Vision Failed:", error);
-    throw error;
+    console.error("Vision AI Error:", error);
+    throw new Error("Não foi possível identificar a raquete através da imagem.");
   }
 }
 
@@ -163,56 +113,29 @@ export async function chatWithPadelCoach(
     profile: PlayerProfile | null, 
     comparedRackets: Racket[]
 ): Promise<string> {
-    // Initializing GenAI client with process.env.API_KEY
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    // Using gemini-3-flash-preview for real-time conversational tasks
-    const modelId = "gemini-3-flash-preview";
 
-    const profileContext = profile 
-        ? `PLAYER PROFILE: Level: ${profile.experience}, Style: ${profile.style}, Position: ${profile.position}, Weight: ${profile.weight}kg, Height: ${profile.height}cm, Injuries: ${profile.injuries?.join(',')}, Touch Pref: ${profile.touch_preference}. Targets: Power ${profile.power}/10, Control ${profile.control}/10.`
-        : "PLAYER PROFILE: Unknown/Guest (Ask them about their level and style if relevant).";
-
-    const racketContext = comparedRackets.length > 0
-        ? `RACKETS BEING COMPARED: ${comparedRackets.map(r => `${r.brand} ${r.model} (${r.year}) - Shape: ${r.shape}, Balance: ${r.balance}, Hardness: ${r.characteristics.rigidity}/10`).join(' VS ')}`
-        : "RACKETS BEING COMPARED: None selected yet.";
-
-    const systemPrompt = `
-        You are "Coach AI", a world-class Padel Expert and Technical Consultant for "Loucos por Padel".
-        
-        YOUR GOAL: Help the user choose the perfect racket based on their profile and the rackets they are comparing.
-        
-        CONTEXT:
-        ${profileContext}
-        ${racketContext}
-
-        GUIDELINES:
-        1. Be concise, professional, but enthusiastic.
-        2. If the user is comparing rackets, analyze which one fits their PROFILE better. Explain WHY based on physics (balance, weight, hardness).
-        3. If there is a mismatch (e.g., beginner looking at a pro diamond racket), gently warn them and suggest why it might be difficult.
-        4. If you lack info (e.g., injuries or level), ask the user specifically about it to refine your advice.
-        5. Use formatting like bullet points for clarity.
-        6. **IMPORTANT: ALWAYS RESPOND IN PORTUGUESE (PT-PT).**
-        
-        Answer the user's latest message based on this context.
-    `;
-
-    // Normalizing history for the Gemini API contents array format
     const contents = history.map(msg => ({
         role: msg.role,
         parts: [{ text: msg.text }]
     }));
 
+    // Adiciona contexto de perfil e raquetes ao prompt de sistema implicitamente se houver
+    const contextualInstruction = `${AI_CONFIG.systemInstructions.coach} 
+    ${profile ? `Contexto do utilizador: ${profile.experience}, joga à ${profile.position}, estilo ${profile.style}.` : ""}
+    ${comparedRackets.length > 0 ? `Raquetes em comparação: ${comparedRackets.map(r => r.model).join(", ")}.` : ""}`;
+
     try {
         const response = await ai.models.generateContent({
-            model: modelId,
+            model: AI_CONFIG.models.text,
             contents: contents,
-            config: {
-                systemInstruction: systemPrompt
+            config: { 
+              ...AI_CONFIG.generationConfig,
+              systemInstruction: contextualInstruction 
             }
         });
-        return response.text || "Estou a analisar os dados do campo... tenta perguntar novamente.";
+        return response.text || "Estou a postos! O que queres saber sobre o teu jogo?";
     } catch (error) {
-        console.error("Chat Error", error);
-        return "Modo Offline: Não foi possível conectar ao treinador IA (Verifique a API Key).";
+        return "Tive uma falha de comunicação no court. Podes repetir a pergunta?";
     }
 }
