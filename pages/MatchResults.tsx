@@ -5,11 +5,15 @@ import { PlayerProfile, Racket } from '../types';
 import { getRacketMatch } from '../utils/matchLogic';
 import RacketCard from '../components/RacketCard';
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowRight, Activity, Zap, BarChart2, CheckCircle2, BrainCircuit, MessageSquareQuote } from 'lucide-react';
+import { Activity, ArrowRight, Sparkles, Zap, Info, MessageSquareQuote, Layers, UserPlus, BookmarkCheck, History, Cloud } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 
 const MatchResults = () => {
-  const [matches, setMatches] = useState<Racket[]>([]);
+  const [matches, setMatches] = useState<{racket: Racket, score: number}[]>([]);
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
+  const { addToCompare } = useApp();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('player_profile');
@@ -17,68 +21,50 @@ const MatchResults = () => {
       const p = JSON.parse(savedProfile);
       setProfile(p);
       
-      const ranked = RACKETS.map(r => ({
-        ...r,
-        score: getRacketMatch(r) // Attach score temporarily for sort
-      }))
-      .filter(r => r.score > 50) // Filter bad matches
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3); // Top 3
+      const ranked = [...RACKETS]
+        .map(r => ({ racket: r, score: getRacketMatch(r) }))
+        .filter(item => item.score > 30)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
 
       setMatches(ranked);
     }
   }, []);
 
-  // --- LOGIC: GENERATE DYNAMIC ANALYSIS ---
-  const getMatchAnalysis = (racket: Racket, profile: PlayerProfile) => {
-    
-    // 1. THE "WHY" (Fit Reason)
-    let whyFit = "Esta raquete equilibra as suas métricas gerais.";
-    if (profile.injuries && profile.injuries.some(i => i !== 'None') && racket.characteristics.comfort > 7) {
-        whyFit = `A elevada taxa de conforto (${racket.characteristics.comfort}/10) e o núcleo ${racket.core_type} protegem as suas articulações contra vibrações.`;
-    } else if (profile.style === 'ofensivo' && racket.balance === 'alto') {
-        whyFit = "O balanço alto alinha-se perfeitamente com o seu estilo ofensivo, maximizando a alavanca no smash.";
-    } else if (profile.style === 'consistente' && racket.characteristics.sweetspot > 8) {
-        whyFit = "O ponto doce alargado compensa erros e garante a consistência defensiva que o seu jogo exige.";
-    } else if (profile.net_style === 'aggressive' && racket.characteristics.maneuverability > 7) {
-        whyFit = "A manuseabilidade superior permite a rapidez de reação necessária para os seus voleios de bloqueio e ataque.";
+  const getReasoning = (racket: Racket, p: PlayerProfile) => {
+    const reasons = [];
+    if (p.injuries?.some(i => i !== 'None') && racket.characteristics.comfort >= 7) {
+      reasons.push("Proteção extra para as tuas articulações.");
     }
-
-    // 2. HUMAN TRANSLATION (Tech -> Benefit)
-    const translations = [];
-    if (racket.shape === 'diamante') translations.push("Formato Diamante = Mais peso na cabeça para finalizar pontos.");
-    if (racket.shape === 'redonda') translations.push("Formato Redondo = Mais fácil de manusear e defender.");
-    if (racket.surface_type.includes('18K') || racket.surface_type.includes('12K')) translations.push("Carbono denso = Toque seco e precisão cirúrgica.");
-    if (racket.surface_type.includes('Fiber') || racket.surface_type.includes('3K')) translations.push("Fibra flexível = Saída de bola fácil sem esforço.");
-    if (racket.roughness === 'Sim') translations.push("Acabamento rugoso = Mais efeito nos seus slices e viboras.");
-    const techTranslation = translations.slice(0, 2).join(" ");
-
-    // 3. MICRO INSIGHT
-    let insight = "";
-    const powerDiff = (racket.characteristics.power || 0) - profile.power;
-    
-    if (powerDiff > 2) insight = "🚀 Boost de Potência: Esta raquete dá-lhe mais saída do que o seu perfil pediu, ideal para evoluir no ataque.";
-    else if (racket.characteristics.control > 8) insight = "🎯 Sniper Mode: Uma extensão do braço para colocar a bola onde quiser.";
-    else if (racket.price_range.includes("300")) insight = "💎 Investimento Premium: Tecnologia de topo usada no World Padel Tour.";
-    else insight = "⚖️ Equilíbrio Perfeito: Uma extensão natural do seu braço.";
-
-    return { whyFit, techTranslation, insight };
+    if (p.style === 'ofensivo' && racket.characteristics.power >= 8) {
+      reasons.push("Maximiza a força nos teus remates.");
+    }
+    if (p.style === 'consistente' && racket.characteristics.control >= 8) {
+      reasons.push("Precisão total para controlar o ritmo do jogo.");
+    }
+    if (p.position === 'esquerda' && racket.balance === 'alto') {
+      reasons.push("Ideal para ganhar pontos na rede.");
+    }
+    if (p.position === 'direita' && racket.balance !== 'alto') {
+      reasons.push("Equilíbrio perfeito para defender e colocar a bola.");
+    }
+    if (racket.characteristics.sweetspot >= 8) {
+      reasons.push("Ponto doce amplo para facilitar o teu jogo.");
+    }
+    return reasons.slice(0, 2);
   };
 
   if (!profile) {
     return (
-      <div className="min-h-screen pt-20 flex flex-col items-center justify-center p-4 text-center bg-padel-black bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
-        <div className="bg-zinc-900/80 p-12 rounded-2xl border border-zinc-800 backdrop-blur-sm max-w-lg w-full">
+      <div className="min-h-screen pt-20 flex flex-col items-center justify-center p-4 text-center bg-padel-black">
+        <div className="bg-zinc-900/80 p-12 rounded-2xl border border-zinc-800 backdrop-blur-sm max-w-lg w-full shadow-2xl">
           <Activity size={64} className="text-zinc-700 mx-auto mb-6" />
-          <h2 className="text-3xl font-black text-white uppercase italic mb-2">Sem Perfil</h2>
-          <p className="text-zinc-500 font-mono text-sm mb-8 leading-relaxed">
-            O Motor de Correspondência requer dados biométricos e de estilo de jogo para calcular pontuações de compatibilidade.
+          <h2 className="text-3xl font-black text-white uppercase italic mb-2 tracking-tighter">Ops! Falta o Perfil</h2>
+          <p className="text-zinc-500 font-mono text-sm mb-8 uppercase tracking-widest">
+            Não conseguimos calcular o teu match sem saber como jogas.
           </p>
-          <Link 
-            to="/quiz" 
-            className="inline-flex items-center gap-2 bg-padel-lime text-padel-black px-8 py-4 rounded font-bold uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_20px_rgba(163,230,53,0.3)]"
-          >
-            Iniciar Avaliação <ArrowRight size={18} strokeWidth={3} />
+          <Link to="/quiz" className="inline-flex items-center gap-2 bg-padel-lime text-padel-black px-8 py-4 rounded font-bold uppercase tracking-wide hover:bg-lime-300 transition shadow-[0_0_20px_rgba(163,230,53,0.3)]">
+            Fazer Teste de 1 Minuto <ArrowRight size={18} />
           </Link>
         </div>
       </div>
@@ -90,114 +76,202 @@ const MatchResults = () => {
       <div className="max-w-7xl mx-auto">
         
         {/* Header Section */}
-        <div className="text-center mb-16 relative px-4">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-padel-lime/10 blur-[100px] rounded-full -z-10"></div>
-          
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-zinc-900 border border-zinc-800 text-padel-lime text-[10px] font-mono font-bold uppercase tracking-widest mb-6">
-            <Zap size={12} fill="currentColor" /> Algoritmo Match v2.0
-          </div>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter mb-4 leading-none max-w-full break-words">
-            Correspondência <span className="text-transparent bg-clip-text bg-gradient-to-r from-padel-lime to-green-600">Ideal</span>
-          </h1>
-          
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-mono text-zinc-400 mt-4">
-             <span className="bg-zinc-900 px-3 py-1 rounded border border-zinc-800">
-                ESTILO: <span className="text-white uppercase font-bold">{profile.style}</span>
-             </span>
-             <span className="hidden md:inline text-zinc-600">|</span>
-             <span className="bg-zinc-900 px-3 py-1 rounded border border-zinc-800">
-                NÍVEL: <span className="text-white uppercase font-bold">{profile.experience}</span>
-             </span>
-          </div>
-        </div>
-
-        {/* Results Grid - Linear Order 1-2-3 */}
-        <div className="grid md:grid-cols-3 gap-8 items-start max-w-6xl mx-auto">
-          {matches.map((racket, index) => {
-            const analysis = getMatchAnalysis(racket, profile);
-            
-            return (
-            <div key={racket.id} className="relative group flex flex-col h-full">
-              
-              {/* Rank Number & Badge */}
-              <div className="flex items-center justify-between mb-4 px-2">
-                 <div className={`text-5xl font-black italic tracking-tighter ${index === 0 ? 'text-padel-lime' : 'text-zinc-800 group-hover:text-zinc-700'}`}>
-                    #{index + 1}
-                 </div>
-                 {index === 0 && (
-                    <div className="bg-padel-lime text-padel-black px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest flex items-center gap-1 shadow-[0_0_15px_rgba(163,230,53,0.3)]">
-                        <Trophy size={12} /> Melhor Escolha
-                    </div>
-                 )}
-              </div>
-              
-              {/* Card Container */}
-              <div className={`transform transition-all duration-300 ${index === 0 ? 'scale-105 ring-2 ring-padel-lime ring-offset-4 ring-offset-padel-black shadow-2xl shadow-padel-lime/10 mb-8' : 'hover:scale-102 mb-4'}`}>
-                  <div className={`rounded-xl h-[420px] ${index === 0 ? 'bg-zinc-900' : 'bg-zinc-900/50'}`}>
-                    <RacketCard racket={racket} showMatchScore={true} />
-                  </div>
-              </div>
-
-              {/* DYNAMIC ANALYSIS PANEL */}
-              <div className={`flex-grow mt-4 p-5 rounded-xl border flex flex-col gap-4 ${index === 0 ? 'bg-zinc-900/80 border-padel-lime/30' : 'bg-zinc-900/40 border-zinc-800'}`}>
-                  
-                  {/* 1. WHY */}
-                  <div>
-                      <div className="flex items-center gap-2 mb-2 text-padel-lime">
-                          <CheckCircle2 size={16} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Porquê esta escolha?</span>
-                      </div>
-                      <p className="text-sm text-zinc-300 leading-relaxed font-medium">
-                          {analysis.whyFit}
-                      </p>
-                  </div>
-
-                  {/* 2. TRANSLATION */}
-                  <div>
-                      <div className="flex items-center gap-2 mb-2 text-blue-400">
-                          <BrainCircuit size={16} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Tradução Técnica</span>
-                      </div>
-                      <p className="text-xs text-zinc-400 font-mono leading-relaxed">
-                          {analysis.techTranslation}
-                      </p>
-                  </div>
-
-                  {/* 3. INSIGHT */}
-                  <div className="mt-auto pt-4 border-t border-white/5">
-                      <div className="flex items-start gap-2 text-zinc-300">
-                          <MessageSquareQuote size={16} className="text-zinc-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-xs italic font-bold text-white">
-                              "{analysis.insight}"
-                          </p>
-                      </div>
-                  </div>
-
-              </div>
-
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+          <div className="relative">
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-padel-lime/10 blur-[60px] rounded-full -z-10"></div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-mono text-padel-lime uppercase tracking-[0.3em]">Scouting Report</span>
+              <div className="h-px w-12 bg-zinc-800"></div>
             </div>
-          )})}
+            <h1 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter leading-none">
+              O teu <span className="text-padel-lime">Match Ideal</span>
+            </h1>
+            <p className="text-zinc-500 font-medium text-sm mt-2">Analisámos o teu estilo de jogo e estas são as raquetes que vão elevar o teu nível.</p>
+          </div>
+
+          <div className="flex gap-3">
+             <button 
+                onClick={() => {
+                  matches.forEach(m => addToCompare(m.racket));
+                }}
+                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-bold uppercase tracking-widest hover:border-padel-lime transition-all"
+             >
+                <Layers size={16} /> Comparar Top 3
+             </button>
+          </div>
         </div>
+
+        {/* AI Coach Verdict Summary */}
+        {profile.aiAnalysis && (
+          <div className="mb-12 bg-zinc-900/40 rounded-3xl border border-zinc-800 p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <MessageSquareQuote size={120} />
+            </div>
+            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+              <div className="flex-shrink-0">
+                <div className="w-16 h-16 bg-padel-lime rounded-2xl flex items-center justify-center text-padel-black shadow-[0_0_30px_rgba(163,230,53,0.2)]">
+                  <Zap size={32} fill="currentColor" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-white uppercase italic mb-2 flex items-center gap-2">
+                  Veredito do Treinador Loucos por Padel
+                </h3>
+                <p className="text-zinc-300 text-base md:text-lg font-medium leading-relaxed italic border-l-2 border-padel-lime pl-6">
+                  "{profile.aiAnalysis}"
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Results Grid */}
+        <div className="grid md:grid-cols-3 gap-8 items-stretch mb-16">
+          {matches.map(({racket, score}, index) => {
+            const isBest = index === 0;
+            const reasons = getReasoning(racket, profile);
+
+            return (
+              <div key={racket.id} className="flex flex-col animate-fade-in-up h-full" style={{ animationDelay: `${index * 150}ms` }}>
+                <div className="flex items-center justify-between mb-4 px-2">
+                   <div className="flex items-center gap-3">
+                      <span className={`text-4xl font-black italic tracking-tighter ${isBest ? 'text-padel-lime' : 'text-zinc-800'}`}>
+                        #{index + 1}
+                      </span>
+                      {isBest && (
+                        <span className="bg-padel-lime/10 text-padel-lime border border-padel-lime/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 shadow-[0_0_15px_rgba(163,230,53,0.1)]">
+                          <Sparkles size={12} /> Sugestão Pro
+                        </span>
+                      )}
+                   </div>
+                   <div className="text-right">
+                      <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest leading-none mb-1">Compatibilidade</div>
+                      <div className={`text-xl font-black font-mono ${score > 85 ? 'text-padel-lime' : 'text-white'}`}>{score}%</div>
+                   </div>
+                </div>
+                
+                <div className={`flex-grow flex flex-col transition-all duration-300 bg-zinc-900 rounded-3xl border border-zinc-800 overflow-hidden group hover:border-padel-lime/50 shadow-2xl ${isBest ? 'ring-2 ring-padel-lime/20' : ''}`}>
+                   <div className="h-[380px]">
+                      <RacketCard racket={racket} showMatchScore={false} />
+                   </div>
+                   
+                   <div className="p-6 bg-zinc-950/50 flex-grow flex flex-col border-t border-zinc-800">
+                      <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <Info size={12} /> Porquê esta raquete?
+                      </h4>
+                      
+                      <div className="space-y-3 mb-6 flex-grow">
+                        {reasons.map((reason, i) => (
+                          <div key={i} className="flex items-start gap-3 text-zinc-300">
+                            <div className="mt-1 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-padel-lime shadow-[0_0_8px_rgba(163,230,53,0.8)]"></div>
+                            <span className="text-xs font-bold uppercase tracking-wide leading-relaxed">{reason}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 mt-auto">
+                        <div className="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                           <div className="text-[9px] text-zinc-500 font-mono uppercase mb-1">Ponto Forte</div>
+                           <div className="text-[11px] font-black text-white uppercase italic">
+                              {racket.characteristics.power >= racket.characteristics.control ? 'Potência Bruta' : 'Controlo Total'}
+                           </div>
+                        </div>
+                        <div className="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                           <div className="text-[9px] text-zinc-500 font-mono uppercase mb-1">Nível</div>
+                           <div className="text-[11px] font-black text-white uppercase italic">
+                              {racket.targetPlayer?.split('/')[0] || 'Intermédio'}
+                           </div>
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* AUTH CALL TO ACTION - New Section */}
+        {!isAuthenticated && (
+          <div className="mb-16 animate-fade-in-up">
+            <div className="bg-gradient-to-br from-padel-lime/20 to-zinc-900 rounded-3xl border border-padel-lime/30 p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center gap-8 shadow-[0_0_50px_rgba(163,230,53,0.05)]">
+               {/* Decorative background icons */}
+               <div className="absolute -bottom-10 -right-10 text-padel-lime/10 opacity-20 pointer-events-none">
+                  <BookmarkCheck size={200} />
+               </div>
+               
+               <div className="flex-shrink-0 text-center md:text-left">
+                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-padel-black mx-auto md:mx-0 mb-4 shadow-xl">
+                    <UserPlus size={32} />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tight">Guarda este <span className="text-padel-lime">Resultado</span></h2>
+                  <p className="text-zinc-400 font-medium text-sm mt-2 max-w-sm">Não percas o teu perfil técnico. Regista-te para associar este match à tua conta e desbloquear ferramentas pro.</p>
+               </div>
+
+               <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { icon: History, text: "Histórico de Scouting" },
+                    { icon: Cloud, text: "Acesso em qualquer lado" },
+                    { icon: Sparkles, text: "Análise IA Persistente" },
+                    { icon: BookmarkCheck, text: "Lista de Favoritos" }
+                  ].map((benefit, i) => (
+                    <div key={i} className="flex items-center gap-3 bg-zinc-950/40 p-3 rounded-xl border border-white/5">
+                       <benefit.icon size={16} className="text-padel-lime" />
+                       <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{benefit.text}</span>
+                    </div>
+                  ))}
+               </div>
+
+               <div className="flex-shrink-0 flex flex-col gap-3 w-full md:w-auto">
+                  <Link to="/register" className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-padel-black rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-padel-lime transition-all shadow-xl">
+                    Criar Conta Grátis <ArrowRight size={16} />
+                  </Link>
+                  <p className="text-[10px] text-center text-zinc-500 font-mono uppercase">Demora apenas 30 segundos</p>
+               </div>
+            </div>
+          </div>
+        )}
         
-        {/* Footer Action */}
-        <div className="mt-20 flex flex-col items-center">
-           <div className="h-16 w-[1px] bg-gradient-to-b from-transparent via-zinc-700 to-transparent mb-6"></div>
-           <Link 
-             to="/explore" 
-             className="group flex items-center gap-4 px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-zinc-800 hover:border-padel-lime transition-all"
-           >
-              <div className="p-2 bg-zinc-950 rounded text-padel-lime group-hover:scale-110 transition-transform">
-                 <BarChart2 size={24} />
-              </div>
+        {/* Footer Actions & Navigation */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-12 border-t border-zinc-900 pt-12">
+           <Link to="/explore" className="group flex items-center gap-4 px-8 py-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl hover:border-white transition-all">
               <div className="text-left">
-                 <div className="text-white font-bold uppercase text-sm tracking-wide group-hover:text-padel-lime transition-colors">Ver Base de Dados Completa</div>
-                 <div className="text-zinc-500 text-[10px] font-mono">COMPARAR OUTROS MODELOS MANUALMENTE</div>
+                 <div className="text-zinc-300 font-bold uppercase text-xs tracking-wider">Ainda tens dúvidas?</div>
+                 <div className="text-zinc-600 text-[10px] font-mono uppercase tracking-widest">Explora todo o catálogo de raquetes</div>
               </div>
-              <ArrowRight className="text-zinc-600 group-hover:text-white transition-colors" />
+              <ArrowRight className="text-zinc-700 group-hover:text-white transition-all" />
+           </Link>
+           
+           <Link to="/quiz" className="flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-zinc-800 transition-all">
+              Refazer Avaliação <Activity size={16} />
            </Link>
         </div>
 
+        {/* Quick Comparison Section */}
+        <div className="mt-24 text-center">
+            <h2 className="text-2xl font-black text-white uppercase italic mb-8 flex items-center justify-center gap-3">
+               <span className="w-8 h-px bg-zinc-800"></span>
+               Ver Comparação Técnica
+               <span className="w-8 h-px bg-zinc-800"></span>
+            </h2>
+            <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800 p-8 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex -space-x-4">
+                   {matches.map(m => (
+                     <div key={m.racket.id} className="w-16 h-16 rounded-full bg-zinc-950 border-2 border-zinc-800 overflow-hidden flex items-center justify-center p-2 shadow-xl hover:translate-y-[-4px] transition-transform">
+                        <img src={m.racket.image_url} alt={m.racket.model} className="w-full h-full object-contain" />
+                     </div>
+                   ))}
+                </div>
+                <div className="text-center md:text-left flex-grow max-w-sm">
+                   <h4 className="text-white font-bold uppercase text-sm mb-1 italic">Analisa os dados lado a lado</h4>
+                   <p className="text-zinc-500 text-xs font-mono uppercase leading-relaxed">
+                      Vê como a potência, controlo e conforto se comparam entre as tuas 3 melhores opções.
+                   </p>
+                </div>
+                <Link to="/compare" className="px-8 py-4 bg-padel-lime text-padel-black rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-lime-400 transition-all">
+                  Abrir Matriz de Comparação
+                </Link>
+            </div>
+        </div>
       </div>
     </div>
   );

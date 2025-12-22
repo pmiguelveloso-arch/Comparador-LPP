@@ -2,51 +2,24 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PlayerProfile, Racket } from "../types";
 
-// Lazy initialization holder
-let aiClient: GoogleGenAI | null = null;
-
-// Helper to safely get the API Key across different environments (Vite, Next, Webpack)
-const getApiKey = (): string | undefined => {
-  let key: string | undefined = undefined;
-
-  // 1. Try Vite (Vercel default for static React)
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore
-      key = import.meta.env.VITE_API_KEY || import.meta.env.API_KEY;
-    }
-  } catch (e) { /* ignore */ }
-
-  if (key) return key;
-
-  // 2. Try Node/Webpack (Standard process.env)
-  try {
-    if (typeof process !== 'undefined' && process.env) {
-      key = process.env.API_KEY || process.env.REACT_APP_API_KEY;
-    }
-  } catch (e) { /* ignore */ }
-
-  return key;
-};
-
-// Helper to safely get the client instance
-const getAiClient = (): GoogleGenAI => {
-  if (aiClient) return aiClient;
-
-  const apiKey = getApiKey();
-  
-  if (!apiKey) {
-    console.error("CRITICAL: API Key not found. Please set VITE_API_KEY in Vercel Environment Variables.");
-    throw new Error("MISSING_API_KEY");
-  }
-
-  aiClient = new GoogleGenAI({ apiKey });
-  return aiClient;
+// Helper to convert file to Base64 for vision-based model inputs
+const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: string; mimeType: string } }> => {
+  const base64EncodedDataPromise = new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+    reader.readAsDataURL(file);
+  });
+  return {
+    inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+  };
 };
 
 export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Promise<PlayerProfile> {
-  const modelId = "gemini-2.5-flash";
+  // Initializing GenAI client with process.env.API_KEY as the exclusive source
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  // Using gemini-3-pro-preview for complex reasoning and tactical analysis
+  const modelId = "gemini-3-pro-preview";
 
   const prompt = `
     You are an expert Padel Equipment Coach and Biomechanics Analyst.
@@ -85,7 +58,6 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
   `;
 
   try {
-    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
@@ -109,7 +81,6 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
 
     const aiResult = JSON.parse(response.text || "{}");
 
-    // Merge AI results with the original form data
     const completeProfile: PlayerProfile = {
       ...(formData as PlayerProfile),
       power: aiResult.power || 5,
@@ -126,14 +97,12 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
   } catch (error: any) {
     console.warn("AI Analysis unavailable or failed. Using fallback logic.", error.message);
     
-    // Fallback logic if AI fails (e.g. no key, network error)
     let basePower = 5;
     let baseControl = 5;
     
     if (formData.style === 'ofensivo') { basePower = 8; baseControl = 5; }
     else if (formData.style === 'consistente') { basePower = 4; baseControl = 9; }
     
-    // Safety override
     const hasInjury = formData.injuries?.some(i => i !== 'None');
     
     return {
@@ -149,20 +118,11 @@ export async function analyzeProfileWithAI(formData: Partial<PlayerProfile>): Pr
   }
 }
 
-// Helper to convert file to Base64
-const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: string; mimeType: string } }> => {
-  const base64EncodedDataPromise = new Promise<string>((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
-    reader.readAsDataURL(file);
-  });
-  return {
-    inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-  };
-};
-
 export async function identifyRacketFromImage(file: File): Promise<any> {
-  const modelId = "gemini-2.5-flash"; 
+  // Initializing GenAI client with process.env.API_KEY
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Using gemini-2.5-flash-image for high-performance visual recognition
+  const modelId = "gemini-2.5-flash-image"; 
 
   const prompt = `
     Analyze this image of a Padel Racket.
@@ -181,14 +141,11 @@ export async function identifyRacketFromImage(file: File): Promise<any> {
   `;
 
   try {
-    const ai = getAiClient();
     const imagePart = await fileToGenerativePart(file);
     
     const response = await ai.models.generateContent({
       model: modelId,
-      contents: [
-        { role: 'user', parts: [imagePart, { text: prompt }] }
-      ],
+      contents: { parts: [imagePart, { text: prompt }] },
       config: {
         responseMimeType: "application/json"
       }
@@ -206,7 +163,10 @@ export async function chatWithPadelCoach(
     profile: PlayerProfile | null, 
     comparedRackets: Racket[]
 ): Promise<string> {
-    const modelId = "gemini-2.5-flash";
+    // Initializing GenAI client with process.env.API_KEY
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Using gemini-3-flash-preview for real-time conversational tasks
+    const modelId = "gemini-3-flash-preview";
 
     const profileContext = profile 
         ? `PLAYER PROFILE: Level: ${profile.experience}, Style: ${profile.style}, Position: ${profile.position}, Weight: ${profile.weight}kg, Height: ${profile.height}cm, Injuries: ${profile.injuries?.join(',')}, Touch Pref: ${profile.touch_preference}. Targets: Power ${profile.power}/10, Control ${profile.control}/10.`
@@ -236,20 +196,19 @@ export async function chatWithPadelCoach(
         Answer the user's latest message based on this context.
     `;
 
-    // Convert history to Gemini format
-    const contents = [
-        { role: 'user', parts: [{ text: systemPrompt }] }, // System instruction as first user message for context
-        ...history.map(msg => ({
-            role: msg.role,
-            parts: [{ text: msg.text }]
-        }))
-    ];
+    // Normalizing history for the Gemini API contents array format
+    const contents = history.map(msg => ({
+        role: msg.role,
+        parts: [{ text: msg.text }]
+    }));
 
     try {
-        const ai = getAiClient();
         const response = await ai.models.generateContent({
             model: modelId,
-            contents: contents
+            contents: contents,
+            config: {
+                systemInstruction: systemPrompt
+            }
         });
         return response.text || "Estou a analisar os dados do campo... tenta perguntar novamente.";
     } catch (error) {

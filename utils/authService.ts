@@ -1,156 +1,93 @@
 
 import { User, PlayerProfile } from '../types';
+import { supabase } from '../lib/database';
 
-const DB_KEY = 'loucos_users_db';
 const SESSION_KEY = 'loucos_session_user';
 
-// Helper to get simulated DB
-const getDB = (): User[] => {
-  if (typeof window === 'undefined') return [];
-  const db = localStorage.getItem(DB_KEY);
-  return db ? JSON.parse(db) : [];
-};
-
-// Helper to save simulated DB
-const saveDB = (users: User[]) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(DB_KEY, JSON.stringify(users));
-  }
-};
-
 export const authService = {
-  // Register a new user
   register: async (name: string, email: string, password: string): Promise<User> => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getDB();
-        if (users.find(u => u.email === email)) {
-          reject('Email already registered');
-          return;
-        }
-
-        // Check if there is an existing guest profile to attach
-        let savedProfile = undefined;
-        if (typeof window !== 'undefined') {
-            const currentGuestProfile = localStorage.getItem('player_profile');
-            if (currentGuestProfile) {
-                savedProfile = JSON.parse(currentGuestProfile);
-            }
-        }
-
-        const newUser: User = {
-          id: Date.now().toString(),
-          name,
-          email,
-          password, // In a real app, this would be hashed!
-          savedProfile,
-          createdAt: new Date().toISOString()
-        };
-
-        users.push(newUser);
-        saveDB(users);
-        
-        // Auto Login
-        if (typeof window !== 'undefined') {
-            localStorage.setItem(SESSION_KEY, JSON.stringify(newUser));
-        }
-        resolve(newUser);
-      }, 800); // Simulate network delay
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } }
     });
-  },
 
-  // Login existing user
-  login: async (email: string, password: string): Promise<User> => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = getDB();
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (!user) {
-          reject('Invalid credentials');
-          return;
-        }
+    if (error) throw error.message;
 
-        if (typeof window !== 'undefined') {
-            // Restore user profile to active session
-            if (user.savedProfile) {
-                localStorage.setItem('player_profile', JSON.stringify(user.savedProfile));
-            }
-            localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-        }
-        resolve(user);
-      }, 800);
-    });
-  },
-
-  // Simulate Social Login
-  loginWithProvider: async (provider: 'google' | 'facebook'): Promise<User> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            let savedProfile = undefined;
-            
-            if (typeof window !== 'undefined') {
-                // Check if there is an existing guest profile to attach
-                const currentGuestProfile = localStorage.getItem('player_profile');
-                if (currentGuestProfile) {
-                    savedProfile = JSON.parse(currentGuestProfile);
-                }
-            }
-
-            // Simulate a user coming from a provider
-            const mockUser: User = {
-                id: `social-${Date.now()}`,
-                name: provider === 'google' ? 'Google User' : 'Facebook User',
-                email: `user@${provider}.com`,
-                savedProfile, // If they had a guest profile, attach it. If not, it's undefined (prompting quiz)
-                createdAt: new Date().toISOString()
-            };
-
-            // In a real app we would check if user exists in DB or create new.
-            // For this mock, we just set the session.
-            if (typeof window !== 'undefined') {
-                localStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
-            }
-            resolve(mockUser);
-        }, 1000);
-    });
-  },
-
-  // Logout
-  logout: () => {
-    if (typeof window !== 'undefined') {
-        localStorage.removeItem(SESSION_KEY);
-        localStorage.removeItem('player_profile'); // Clear session data
+    const user = data.user as User;
+    
+    // Se existir um perfil temporário (guest), sincronizamos com a nova conta
+    const guestProfile = localStorage.getItem('player_profile');
+    if (guestProfile) {
+      const profile = JSON.parse(guestProfile);
+      await authService.saveUserProfile(user.id, profile);
     }
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    return user;
   },
 
-  // Get current session
+  login: async (email: string, password: string): Promise<User> => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) throw error.message;
+
+    const user = data.user as User;
+    
+    // Ao fazer login, tentamos recuperar o perfil da "tabela" profiles
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (profile) {
+      localStorage.setItem('player_profile', JSON.stringify(profile));
+    }
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    return user;
+  },
+
+  // Added fix: Implementation of social login (OAuth) to satisfy AuthContext requirements
+  loginWithProvider: async (provider: 'google' | 'facebook'): Promise<User> => {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider });
+
+    if (error) throw error.message;
+
+    const user = data.user as User;
+    
+    // Attempt to retrieve profile for the logged in user
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (profile) {
+      localStorage.setItem('player_profile', JSON.stringify(profile));
+    }
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    return user;
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('player_profile');
+  },
+
   getCurrentUser: (): User | null => {
     if (typeof window === 'undefined') return null;
     const session = localStorage.getItem(SESSION_KEY);
     return session ? JSON.parse(session) : null;
   },
 
-  // Save profile to user account (Persist)
-  saveUserProfile: (userId: string, profile: PlayerProfile) => {
-      const users = getDB();
-      const updatedUsers = users.map(u => {
-          if (u.id === userId) {
-              return { ...u, savedProfile: profile };
-          }
-          return u;
-      });
-      // If user isn't in local DB (e.g. social login not persisted to array), we just update session
-      // In a real app, social users would be in DB.
-      saveDB(updatedUsers);
-      
-      // Update session as well
-      const currentUser = authService.getCurrentUser();
-      if (currentUser && currentUser.id === userId) {
-          currentUser.savedProfile = profile;
-          if (typeof window !== 'undefined') {
-              localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-          }
-      }
+  saveUserProfile: async (userId: string, profile: PlayerProfile) => {
+    const { error } = await supabase.from('profiles').upsert({
+      id: userId,
+      ...profile,
+      updated_at: new Date().toISOString()
+    });
+
+    if (error) console.error("Erro ao sincronizar perfil remoto:", error);
+    
+    // Atualizar também a sessão local para persistência imediata
+    const currentUser = authService.getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      currentUser.savedProfile = profile;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+    }
   }
 };

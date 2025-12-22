@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-PT" class="dark">
   <head>
@@ -7,31 +6,31 @@
     <title>Loucos por Padel | Pro Gear</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
+      window.tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
+              mono: ['JetBrains Mono', 'monospace']
             },
             colors: {
               padel: {
-                black: '#09090b', // Zinc 950
-                surface: '#18181b', // Zinc 900
-                lime: '#a3e635', // Lime 400
-                limeDim: '#4d7c0f', // Lime 700
+                black: '#09090b',
+                surface: '#18181b',
+                lime: '#a3e635',
+                limeDim: '#4d7c0f'
               }
             },
             backgroundImage: {
-              'grid-pattern': "linear-gradient(to right, #27272a 1px, transparent 1px), linear-gradient(to bottom, #27272a 1px, transparent 1px)",
+              'grid-pattern': "linear-gradient(to right, #27272a 1px, transparent 1px), linear-gradient(to bottom, #27272a 1px, transparent 1px)"
             },
             animation: {
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
             }
           }
         }
-      }
+      };
     </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -39,6 +38,7 @@
       body {
         font-family: 'Inter', sans-serif;
         background-color: #09090b;
+        margin: 0;
       }
       
       .font-mono {
@@ -53,7 +53,6 @@
         scrollbar-width: none;
       }
       
-      /* Glassmorphism Utilities */
       .glass-panel {
         background: rgba(24, 24, 27, 0.7);
         backdrop-filter: blur(12px);
@@ -65,30 +64,31 @@
         box-shadow: 0 0 20px -5px rgba(163, 230, 53, 0.3);
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+        "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+        "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1",
+        "react/": "https://aistudiocdn.com/react@^19.2.1/",
+        "react": "https://aistudiocdn.com/react@^19.2.1",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0"
+      }
+    }
+    </script>
+  </head>
   <body class="bg-padel-black text-zinc-100 antialiased selection:bg-padel-lime selection:text-padel-black">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
     <script>
       window.onerror = function(message, source, lineno, colno, error) {
-        console.error('Global Error:', message, error);
-        // Only show if root is empty (app crashed on mount)
-        if (!document.getElementById('root').innerHTML) {
-          document.body.innerHTML = '<div style="color:white; padding:20px; font-family:monospace; text-align:center;">' +
-            '<h1>App Error</h1><p>' + message + '</p><p>Check console for details. Verify API Keys in Vercel Settings.</p></div>';
+        console.error('Runtime Error:', message, error);
+        const root = document.getElementById('root');
+        if (root && !root.innerHTML) {
+          root.innerHTML = '<div style="color:white; padding:40px; text-align:center; font-family:sans-serif;">' +
+            '<h2>Erro Crítico de Inicialização</h2><p>' + message + '</p>' +
+            '<p style="font-size:12px; opacity:0.6;">Verifique a consola para mais detalhes.</p></div>';
         }
       };
     </script>
